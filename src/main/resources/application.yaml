@@ -1,0 +1,25 @@
+spring:
+
+  application:
+    name: FinalProject
+  datasource:
+   url: jdbc:postgresql://localhost:5432/exam_db
+   username: postgres
+   password: root123
+   driver-class-name: org.postgresql.Driver
+
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /ui
+
+server:
+  port: 8080
