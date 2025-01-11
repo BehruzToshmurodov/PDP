@@ -21,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByRoleInAndStatus(List<Role> cleaner, Status arxiv);
 
     List<User> findAllByRoleAndStatus(Role student, Status archive);
+
+    List<User> findAllByRoleNotAndStatusNot(Role role, Status status);
+
 }

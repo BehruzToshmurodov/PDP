@@ -47,7 +47,7 @@ public class StaffService {
 
     public ResponseEntity<?> staffArxiv() {
         try {
-            List<User> staff = staffRepository.findAllByRoleNotInAndStatus(List.of(Role.STUDENT) , Status.ARCHIVE);
+            List<User> staff = staffRepository.findAllByRoleNotInAndStatus(List.of(Role.STUDENT), Status.ARCHIVE);
 
             if (staff.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -66,7 +66,7 @@ public class StaffService {
 
     public ResponseEntity<?> staffOther() {
         try {
-            List<User> staff = staffRepository.findAllByRoleNotInAndStatus(Arrays.asList(Role.TEACHER , Role.STUDENT), Status.ACTIVE);
+            List<User> staff = staffRepository.findAllByRoleNotInAndStatus(Arrays.asList(Role.TEACHER, Role.STUDENT), Status.ACTIVE);
 
             if (staff.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -194,5 +194,41 @@ public class StaffService {
         }
     }
 
+
+    public ResponseEntity<?> getStaff(String status) {
+
+        switch (status) {
+            case "OTHER":
+                List<User> other = staffRepository.findAllByRoleNotAndStatusNot(Role.TEACHER, Status.ARCHIVE);
+                if (other.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(new ResponseMessage("No other staff found in active", List.of(), false));
+                }
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseMessage("All other staffs", other, true));
+
+            case "TEACHER":
+                List<User> teachers = staffRepository.findAllByRoleAndStatusNot(Role.TEACHER, Status.ARCHIVE);
+                if (teachers.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(new ResponseMessage("No teachers found in active", List.of(), false));
+                }
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseMessage("All teachers", teachers, true));
+
+            case "ARCHIVE":
+                List<User> archives = staffRepository.findAllByRoleNotAndStatusNot(Role.TEACHER, Status.ACTIVE);
+                if (archives.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(new ResponseMessage("No staff found in archive", List.of(), false));
+                }
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseMessage("All archived staffs", archives, true));
+
+            default:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ResponseMessage("Something went wrong!", null, false));
+        }
+    }
 
 }

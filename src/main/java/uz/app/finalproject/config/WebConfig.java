@@ -18,14 +18,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(c -> c.disable())
-                .cors(c -> consConfig())
+                .cors(c -> c.configurationSource(consConfig()))
                 .userDetailsService(userDetailsService())
-
-                .authorizeHttpRequests(
-                        auth -> {
-                            auth.anyRequest().permitAll();
-                        }
-                ).build();
+                .authorizeRequests(auth -> auth.anyRequest().permitAll())
+                .build();
     }
 
     @Bean
@@ -38,9 +34,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource consConfig() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // Allow any origin, method, and header
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

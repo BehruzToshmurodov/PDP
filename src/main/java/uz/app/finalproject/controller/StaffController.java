@@ -1,9 +1,12 @@
 package uz.app.finalproject.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.app.finalproject.dto.UserDTO;
+import uz.app.finalproject.dto.getStaffDTO;
+import uz.app.finalproject.entity.ResponseMessage;
 import uz.app.finalproject.service.StaffService;
 
 
@@ -15,22 +18,29 @@ public class StaffController {
 
     private final StaffService staffService;
 
-    @GetMapping("/teacher")
-    public ResponseEntity<?> getStaffs() {
-        return staffService.getStaffs();
+
+    @PostMapping()
+    public ResponseEntity<?> getStaffs(@RequestBody getStaffDTO getStaffDTO){
+       return staffService.getStaff(getStaffDTO.getStatus());
     }
 
-    @GetMapping("/arxiv")
-    public ResponseEntity<?> staffArxiv() {
-        return staffService.staffArxiv();
-    }
 
-    @GetMapping("/other")
-    public ResponseEntity<?> staffOther() {
-        return staffService.staffOther();
-    }
+//    @GetMapping("/teacher")
+//    public ResponseEntity<?> getStaffs() {
+//        return staffService.getStaffs();
+//    }
+//
+//    @GetMapping("/arxiv")
+//    public ResponseEntity<?> staffArxiv() {
+//        return staffService.staffArxiv();
+//    }
+//
+//    @GetMapping("/other")
+//    public ResponseEntity<?> staffOther() {
+//        return staffService.staffOther();
+//    }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> addStaff(@RequestBody UserDTO staffDTO) {
         return staffService.addStaff(staffDTO);
     }
