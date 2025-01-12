@@ -35,12 +35,18 @@ public class WebConfig implements WebMvcConfigurer {
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "PUT", "POST"));
-        config.setAllowedOrigins(List.of("http://localhost:8080", "https://etadoor.koyeb.app"));
-        config.setExposedHeaders(List.of());
+        config.setAllowedHeaders(List.of("*")); // Allow all headers
+        config.setAllowedMethods(List.of("GET", "PUT", "POST", "DELETE", "OPTIONS")); // Allow all standard HTTP methods
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:8080", // For local development
+                "https://etadoor.koyeb.app", // Your app's Koyeb domain
+                "https://anonymous-octopus-pdpteam-487d0d53.koyeb.app" // Swagger UI domain
+        ));
+        config.setAllowCredentials(true); // Allow cookies or credentials
+        config.setExposedHeaders(List.of("Authorization", "Content-Type")); // Optional: if you need these exposed
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
 
 }
