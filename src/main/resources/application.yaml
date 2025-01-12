@@ -2,18 +2,19 @@ spring:
 
   application:
     name: FinalProject
-  datasource:
-   url: jdbc:postgresql://localhost:5432/exam_db
-   username: postgres
-   password: root123
-   driver-class-name: org.postgresql.Driver
 
+  datasource:
+    url: jdbc:postgresql://dpg-cu1rkr8gph6c73ekru4g-a:5432/pdp_db
+    username: pdp_db_user
+    password: q5kTNq4i6P3JvGrC77gvTpjlHOV7JITf
+    driver-class-name: org.postgresql.Driver
 
   jpa:
-    show-sql: true
     hibernate:
       ddl-auto: update
-
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 springdoc:
   api-docs:
