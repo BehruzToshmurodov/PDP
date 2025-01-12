@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(c -> c.disable())
-                .cors(c -> c.configurationSource(consConfig()))
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .userDetailsService(userDetailsService())
                 .authorizeRequests(auth -> auth.anyRequest().permitAll())
                 .build();
@@ -32,22 +32,15 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public CorsConfigurationSource consConfig() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of(
-                "*",
-                "https://anonymous-octopus-pdpteam-487d0d53.koyeb.app"
-        ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true); 
-
+    public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "PUT", "POST"));
+        config.setAllowedOrigins(List.of("http://localhost:8080", "https://etadoor.koyeb.app"));
+        config.setExposedHeaders(List.of());
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
-
-
-
 
 }
