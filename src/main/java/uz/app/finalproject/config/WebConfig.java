@@ -34,13 +34,20 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource consConfig() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Allow any origin, method, and header
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of(
+                "*",
+                "https://anonymous-octopus-pdpteam-487d0d53.koyeb.app"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); 
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
+
+
 }
