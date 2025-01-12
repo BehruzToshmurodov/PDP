@@ -24,4 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByRoleNotAndStatusNot(Role role, Status status);
 
+    List<User> findAllByStatus(Status status);
+
+    List<User> findAllByStatusAndRoleNotIn( Status status , List<Role> teacher);
 }

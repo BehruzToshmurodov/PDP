@@ -29,7 +29,7 @@ public class RoomController {
         return roomService.deleteRoom(id);
     }
 
-    @PutMapping("{id}")
+    @PatchMapping("{id}")
     public ResponseEntity<?> updateRoom(@PathVariable String id, RoomDTO roomDTO) {
         return roomService.updateRoom(id, roomDTO);
     }

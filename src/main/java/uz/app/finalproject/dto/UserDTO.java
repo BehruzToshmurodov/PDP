@@ -3,6 +3,8 @@ package uz.app.finalproject.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.app.finalproject.entity.Enums.Gender;
+import uz.app.finalproject.entity.Enums.Role;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,7 +15,7 @@ public class UserDTO {
     private String lastname;
     private String password;
     private String phoneNumber;
-    private String gender;
-    private String role;
+    private Gender gender;
+    private Role role;
 
 }

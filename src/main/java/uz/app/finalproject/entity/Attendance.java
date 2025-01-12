@@ -18,7 +18,7 @@ public class Attendance {
     private Long id;
 
     @ManyToOne
-    private User user;
+    private Student student;
 
     private LocalDateTime attendanceDate;
 

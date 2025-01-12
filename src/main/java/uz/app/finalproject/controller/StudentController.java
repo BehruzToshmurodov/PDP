@@ -3,9 +3,11 @@ package uz.app.finalproject.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uz.app.finalproject.dto.StudentDTO;
 import uz.app.finalproject.dto.UserDTO;
 import uz.app.finalproject.entity.Groups;
 import uz.app.finalproject.entity.ResponseMessage;
+import uz.app.finalproject.entity.Student;
 import uz.app.finalproject.entity.User;
 import uz.app.finalproject.repository.GroupRepository;
 import uz.app.finalproject.repository.UserRepository;
@@ -22,15 +24,15 @@ public class StudentController {
     private final StudentService studentService;
 
 
-    @PostMapping("/add{groupId}")
-    public ResponseEntity<?> addStudent(@RequestBody UserDTO userDto, @PathVariable String groupId) {
-        return studentService.addStudent(userDto, groupId);
+    @PostMapping("/add")
+    public ResponseEntity<?> addStudent(@RequestBody StudentDTO studentDTO) {
+        return studentService.addStudent(studentDTO);
     }
 
 
     @GetMapping
     public ResponseEntity<?> getStudent() {
-        return studentService.getStudent();
+        return studentService.getStudents();
     }
 
 
@@ -40,14 +42,14 @@ public class StudentController {
     }
 
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateStudent(@RequestBody UserDTO userDto, @PathVariable Integer id) {
-        return studentService.updateStudent(userDto, id);
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<?> updateStudent(@RequestBody StudentDTO studentDTO, @PathVariable Long id) {
+        return studentService.updateStudent(studentDTO, id);
     }
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteStudent(@PathVariable String id) {
+    public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
         return studentService.deleteStudent(id);
     }
 

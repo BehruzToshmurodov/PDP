@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import uz.app.finalproject.dto.GroupDTO;
 import uz.app.finalproject.entity.*;
-import uz.app.finalproject.repository.AttendanceRepository;
-import uz.app.finalproject.repository.GroupRepository;
-import uz.app.finalproject.repository.RoomRepository;
-import uz.app.finalproject.repository.UserRepository;
+import uz.app.finalproject.entity.Enums.Status;
+import uz.app.finalproject.repository.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +23,7 @@ public class GroupService {
     final UserRepository userRepository;
     final RoomRepository roomRepository;
     final AttendanceRepository attendanceRepository;
+    final StudentRepository studentRepository;
 
 
 
@@ -56,7 +55,7 @@ public class GroupService {
 
     public ResponseEntity<?> addGroup(GroupDTO groupDTO) {
 
-        if (groupDTO == null || groupDTO.getGroupName() == null || groupDTO.getTeacher() == null || groupDTO.getRoom() == null) {
+        if (groupDTO == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage("Invalid group data provided", null, false));
         }
@@ -66,19 +65,21 @@ public class GroupService {
                     .body(new ResponseMessage("Group with this name already exists", null, false));
         }
 
-        User teacher = userRepository.findUserByFirstnameAndLastname(groupDTO.getTeacher().getFirstname(), groupDTO.getTeacher().getLastname());
-        if (teacher == null) {
+        Optional<User> teacherOptional = userRepository.findById(Long.valueOf(groupDTO.getTeacherId()));
+        if (teacherOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseMessage("Teacher not found", null, false));
         }
 
-        if (!"TEACHER".equals(teacher.getRole())) {
+        User teacher = teacherOptional.get();
+
+        if (!"TEACHER".equals(String.valueOf(teacher.getRole()))) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new ResponseMessage("This teacher does not have the required role", null, false));
         }
 
-        Room room = roomRepository.findByRoomName(groupDTO.getRoom());
-        if (room == null) {
+        Optional<Room> room = roomRepository.findById(Long.valueOf(groupDTO.getRoomId()));
+        if (room.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseMessage("Room not found", null, false));
         }
@@ -89,7 +90,11 @@ public class GroupService {
         groups.setStatus("ACTIVE");
         groups.setStartTime(groupDTO.getStartTime());
         groups.setTeacher(teacher);
-        groups.setRoom(room);
+        groups.setStartDate(groupDTO.getStartDate());
+        groups.setEndDate(groupDTO.getEndDate());
+        groups.setGroupPrice(groups.getGroupPrice());
+        groups.setStNumber(0);
+        groups.setRoom(room.get());
         groupRepository.save(groups);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -99,7 +104,7 @@ public class GroupService {
 
     public ResponseEntity<?> searchGroup(String search) {
         if (search == null || search.trim().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Search term cannot be empty", null, false));
         }
 
@@ -121,7 +126,7 @@ public class GroupService {
                     .body(new ResponseMessage("Invalid group ID", null, false));
         }
 
-        if (groupDTO == null || groupDTO.getGroupName() == null || groupDTO.getTeacher() == null || groupDTO.getRoom() == null) {
+        if (groupDTO == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage("Invalid group data provided", null, false));
         }
@@ -134,15 +139,14 @@ public class GroupService {
 
         Groups group = groupOptional.get();
 
-        User teacher = userRepository.findUserByFirstnameAndLastname(
-                groupDTO.getTeacher().getFirstname(), groupDTO.getTeacher().getLastname());
-        if (teacher == null) {
+        Optional<User> teacher = userRepository.findById(Long.valueOf(groupDTO.getTeacherId()));
+        if (teacher.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseMessage("Teacher not found", null, false));
         }
 
-        Room room = roomRepository.findByRoomName(groupDTO.getRoom());
-        if (room == null) {
+        Optional<Room> room = roomRepository.findById(Long.valueOf(groupDTO.getRoomId()));
+        if (room.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseMessage("Room not found", null, false));
         }
@@ -151,8 +155,8 @@ public class GroupService {
         group.setDays(groupDTO.getDays());
         group.setStatus("ACTIVE");
         group.setStartTime(groupDTO.getStartTime());
-        group.setTeacher(teacher);
-        group.setRoom(room);
+        group.setTeacher(teacher.get());
+        group.setRoom(room.get());
 
         groupRepository.save(group);
 
@@ -202,7 +206,7 @@ public class GroupService {
 
             Groups group = byId.get();
 
-            List<User> students = group.getStudents();
+            List<Student> students = studentRepository.findAllByGroupAndStatus(group , Status.ACTIVE);
 
             if (students.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK)
@@ -233,14 +237,14 @@ public class GroupService {
 
             Groups group = groupOptional.get();
 
-            List<User> students = group.getStudents();
+            List<Student> students = studentRepository.findAllByGroupAndStatus(group , Status.ACTIVE);
 
             if (students.isEmpty()) {
                 return ResponseEntity.ok(new ResponseMessage(
                         "No students found in the group", null, true));
             }
 
-            List<Attendance> attendances = attendanceRepository.findAllByUserIn(students);
+            List<Attendance> attendances = attendanceRepository.findAllByStudentIn(students);
 
             if (attendances.isEmpty()) {
                 return ResponseEntity.ok(new ResponseMessage(
@@ -256,4 +260,45 @@ public class GroupService {
     }
 
 
+    public ResponseEntity<?> addNewReaderToGroup(Long studentId, Long groupId) {
+
+        Optional<Student> studentOptional = studentRepository.findById(studentId);
+        if (studentOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                   .body(new ResponseMessage("Student not found", null, false));
+        }
+
+        Student student = studentOptional.get();
+
+        Optional<Groups> groupsOptional = groupRepository.findById(groupId);
+
+        if (groupsOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                   .body(new ResponseMessage("Group not found", null, false));
+        }
+
+        Groups group = groupsOptional.get();
+
+        student.setGroup(group);
+        group.setStNumber(group.getStNumber()+1);
+
+        studentRepository.save(student);
+        groupRepository.save(group);
+
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseMessage("Student added to group successfully" , student , true));
+    }
+
+    public ResponseEntity<?> getStudentWithoutGroup() {
+
+        List<Student> students = studentRepository.findAllByGroupAndStatus(null , Status.ACTIVE);
+
+        if (students.isEmpty()) {
+            return ResponseEntity.ok(new ResponseMessage("No students without a group", students, true));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage("Students without a group", students, true));
+
+    }
 }

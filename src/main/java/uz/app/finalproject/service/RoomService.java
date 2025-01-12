@@ -29,8 +29,8 @@ public class RoomService {
         List<Room> rooms = repository.findAll();
 
         if (rooms.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                    .body(new ResponseMessage("No rooms found", null, false));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("No rooms found", List.of(), false));
         }
 
         return ResponseEntity.status(HttpStatus.OK)

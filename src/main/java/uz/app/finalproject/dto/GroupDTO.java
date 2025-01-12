@@ -4,6 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,9 +16,13 @@ import lombok.NoArgsConstructor;
 public class GroupDTO {
 
     private String groupName;
-    private TeacherDTO teacher;
-    private String room;
+    private String teacherId;
+    private String roomId;
     private String days;
     private String startTime;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Double groupPrice;
+
 
 }

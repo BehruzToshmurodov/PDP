@@ -6,7 +6,7 @@ import uz.app.finalproject.entity.Room;
 import uz.app.finalproject.entity.User;
 
 import java.util.List;
-import java.util.Optional;
+
 
 public interface GroupRepository extends JpaRepository<Groups, Long> {
 
@@ -15,8 +15,6 @@ public interface GroupRepository extends JpaRepository<Groups, Long> {
     Boolean existsByGroupNameAndStatusNot(String name, String status);
 
     List<Groups> findAllByGroupNameContainsAndStatusEquals(String name, String status);
-
-    Optional<Groups> findByStudentsContaining(User user);
 
     List<Groups> findByRoom(Room room);
 

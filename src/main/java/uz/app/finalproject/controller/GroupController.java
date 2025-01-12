@@ -44,7 +44,7 @@ public class GroupController {
         return groupService.searchGroup(search);
     }
 
-    @PutMapping("/update/{id}")
+    @PatchMapping("/update/{id}")
     public ResponseEntity<?> updateGroup(@RequestBody GroupDTO groupDTO, @PathVariable String id) {
         return groupService.updateGroup(groupDTO, id);
     }
@@ -65,6 +65,19 @@ public class GroupController {
     public ResponseEntity<?> attendance(@PathVariable Long groupId){
         return groupService.getAttendanceByGroupStudents(groupId);
     }
+
+
+    @GetMapping("/getStudentWithoutGroup")
+    public ResponseEntity<?> getStudentWithoutGroup() {
+        return groupService.getStudentWithoutGroup();
+    }
+
+    @PostMapping("/addNewReader/{studentId}/{groupId}")
+    public ResponseEntity<?> addNewReader(@PathVariable Long studentId , @PathVariable Long groupId) {
+       return groupService.addNewReaderToGroup(studentId , groupId);
+    }
+
+
 
 
 }

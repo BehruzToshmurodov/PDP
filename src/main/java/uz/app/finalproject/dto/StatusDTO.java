@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class getStaffDTO {
-
-    private String status;
-
+public class StatusDTO {
+   private String status;
 }

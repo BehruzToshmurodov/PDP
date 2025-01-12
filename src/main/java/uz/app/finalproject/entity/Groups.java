@@ -1,11 +1,16 @@
 package uz.app.finalproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,11 +26,12 @@ public class Groups {
     private User teacher;
     @ManyToOne
     private Room room;
-    @ManyToMany
-    private List<User> students = new ArrayList<>();
-    private Integer stNumber;
+    private Integer stNumber = 0;
     private String days;
     private String startTime;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Double groupPrice;
     private String status = "ACTIVE";
 
 
