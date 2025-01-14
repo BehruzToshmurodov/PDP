@@ -150,11 +150,16 @@ public class GroupService {
         }
 
         group.setGroupName(groupDTO.getGroupName());
+        System.out.println("phone number changed");
         group.setDays(groupDTO.getDays());
+        System.out.println("days changed");
         group.setStatus("ACTIVE");
         group.setStartTime(groupDTO.getStartTime());
+        System.out.println("start time changed");
         group.setTeacher(teacher.get());
+        System.out.println("teacher changed");
         group.setRoom(room.get());
+        System.out.println("room changed");
 
         groupRepository.save(group);
 
