@@ -6,13 +6,14 @@ import uz.app.finalproject.entity.Student;
 import uz.app.finalproject.entity.User;
 
 import javax.xml.stream.events.StartDocument;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface AttendanceRepository extends JpaRepository<Attendance , Long> {
 
-    Optional<Attendance> findByStudentAndAttendanceDate(Student user , LocalDateTime localDateTime);
-
     List<Attendance> findAllByStudentIn(List<Student> students);
+
+    Optional<Attendance> findByStudentAndAttendanceDate(Student student, LocalDate today);
 }
