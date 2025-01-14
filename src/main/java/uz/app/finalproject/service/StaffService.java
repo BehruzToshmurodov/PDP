@@ -206,9 +206,10 @@ public class StaffService {
     }
 
 
-    public ResponseEntity<?> getStaffs(StatusDTO status) {
+    public ResponseEntity<?> getStaffs(String status) {
 
-        switch (status.getStatus()) {
+        switch (status) {
+
             case "OTHER":
                 List<User> other = staffRepository.findAllByStatusAndRoleNotIn(Status.ACTIVE, List.of(Role.TEACHER, Role.STUDENT));
                 if (other.isEmpty()) {

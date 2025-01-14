@@ -21,8 +21,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StudentService {
 
-    final UserRepository userRepository;
-    final GroupRepository groupRepository;
     final AttendanceRepository attendanceRepository;
     final StudentRepository studentRepository;
 
@@ -202,34 +200,46 @@ public class StudentService {
 
             Student student = byId.get();
 
-            LocalDate today = LocalDate.now();
 
-            Optional<Attendance> existingAttendance = attendanceRepository
-                    .findByStudentAndAttendanceDate(student, today);
+            if (student.getGroup() != null) {
+                LocalDate today = LocalDate.now();
 
-            if (existingAttendance.isPresent()) {
-                Attendance attendance = existingAttendance.get();
-                attendance.setAttended(!attendance.isAttended());
-                attendanceRepository.save(attendance);
+                Optional<Attendance> existingAttendance = attendanceRepository
+                        .findByStudentAndAttendanceDate(student, today);
 
-                String message = attendance.isAttended()
-                        ? "Student marked as attended"
-                        : "Student marked as not attended";
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseMessage(message, null, true));
+                if (existingAttendance.isPresent()) {
+                    Attendance attendance = existingAttendance.get();
+                    attendance.setAttended(!attendance.isAttended());
+                    attendanceRepository.save(attendance);
+
+                    String message = attendance.isAttended()
+                            ? "Student marked as attended"
+                            : "Student marked as not attended";
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .body(new ResponseMessage(message, null, true));
+                }
+
+                Attendance newAttendance = new Attendance();
+                newAttendance.setStudent(student);
+                newAttendance.setAttendanceDate(today);
+                newAttendance.setAttended(true);
+                attendanceRepository.save(newAttendance);
+
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(new ResponseMessage("Student attendance recorded as attended", null, true));
             }
 
-            Attendance newAttendance = new Attendance();
-            newAttendance.setStudent(student);
-            newAttendance.setAttendanceDate(today);
-            newAttendance.setAttended(true);
-            attendanceRepository.save(newAttendance);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("This student can not attended because do not added group !", null, false));
 
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ResponseMessage("Student attendance recorded as attended", null, true));
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseMessage("Error processing attendance: " + e.getMessage(), null, false));
         }
+
+
     }
+
 }
+

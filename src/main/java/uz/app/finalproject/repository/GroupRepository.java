@@ -19,4 +19,6 @@ public interface GroupRepository extends JpaRepository<Groups, Long> {
     List<Groups> findByRoom(Room room);
 
     List<Groups> findByTeacher(User user);
+
+    Object findAllByStatus(String active);
 }

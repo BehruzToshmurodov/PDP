@@ -90,7 +90,7 @@ public class GroupService {
         groups.setTeacher(teacher);
         groups.setStartDate(groupDTO.getStartDate());
         groups.setEndDate(groupDTO.getEndDate());
-        groups.setGroupPrice(groups.getGroupPrice());
+        groups.setGroupPrice(groupDTO.getGroupPrice());
         groups.setStNumber(0);
         groups.setRoom(room.get());
         groupRepository.save(groups);
@@ -297,6 +297,18 @@ public class GroupService {
         }
 
         return ResponseEntity.ok(new ResponseMessage("Students without a group", students, true));
+
+    }
+
+    public ResponseEntity<?> getGroups(String status) {
+
+        return switch (status) {
+            case "ACTIVE" ->
+                    ResponseEntity.ok(new ResponseMessage("Active groups", groupRepository.findAllByStatus("ACTIVE"), true));
+            case "ARCHIVE" ->
+                    ResponseEntity.ok(new ResponseMessage("Archived groups", groupRepository.findAllByStatus("ARCHIVE"), true));
+            default -> ResponseEntity.ok(new ResponseMessage("Invalid status", null, false));
+        };
 
     }
 }

@@ -23,14 +23,20 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @GetMapping("/active")
-    public ResponseEntity<?> groupsActive() {
-        return groupService.groupsActive();
-    }
+//    @GetMapping("/active")
+//    public ResponseEntity<?> groupsActive() {
+//        return groupService.groupsActive();
+//    }
+//
+//    @GetMapping("/notActive")
+//    public ResponseEntity<?> groupsArxiv() {
+//        return groupService.groupsArxiv();
+//    }
 
-    @GetMapping("/notActive")
-    public ResponseEntity<?> groupsArxiv() {
-        return groupService.groupsArxiv();
+
+    @GetMapping("/{status}")
+    public ResponseEntity<?> getGroupByStatus(@PathVariable String status){
+       return groupService.getGroups(status);
     }
 
 

@@ -12,6 +12,6 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .addServersItem(new Server().url("http://localhost:8080"))
-                .addServersItem(new Server().url("https://anonymous-octopus-pdpteam-487d0d53.koyeb.app/"));
+                .addServersItem(new Server().url("https://ishonch.koyeb.app/"));
     }
 }

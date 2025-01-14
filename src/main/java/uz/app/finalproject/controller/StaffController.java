@@ -17,9 +17,9 @@ public class StaffController {
     private final StaffService staffService;
 
 
-    @PostMapping()
-    public ResponseEntity<?> getStaffs(@RequestBody StatusDTO statusDTO) {
-        return staffService.getStaffs(statusDTO);
+    @GetMapping("/{status}")
+    public ResponseEntity<?> getStaffs(@PathVariable String status) {
+        return staffService.getStaffs(status);
     }
 
     @PostMapping("/create")

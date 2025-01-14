@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.app.finalproject.entity.Enums.Days;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -20,11 +23,11 @@ public class Groups {
     @ManyToOne
     private Room room;
     private Integer stNumber = 0;
-    private String days;
+    private List<Days> days;
     private String startTime;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Double groupPrice;
+    private Double groupPrice = 0.0;
     private String status = "ACTIVE";
 
 
