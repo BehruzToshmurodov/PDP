@@ -311,4 +311,20 @@ public class GroupService {
         };
 
     }
+
+    public ResponseEntity<?> profile(Long groupId) {
+
+        Optional<Groups> byId = groupRepository.findById(groupId);
+
+        if ( byId.isEmpty()){
+            return ResponseEntity.ok(new ResponseMessage("Group not found" , null , false));
+        }
+
+        Groups group = byId.get();
+
+        List<Student> students = studentRepository.findAllByGroupAndStatus(group, Status.ACTIVE);
+
+       return ResponseEntity.ok(new ResponseMessage("Group information" , List.of(group , students) , true));
+
+    }
 }

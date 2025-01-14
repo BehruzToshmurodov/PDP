@@ -39,6 +39,11 @@ public class GroupController {
        return groupService.getGroups(status);
     }
 
+    @GetMapping("/profile/{groupId}")
+    public ResponseEntity<?> profile(@PathVariable Long groupId){
+       return groupService.profile(groupId);
+    }
+
 
     @PostMapping("/addGroup")
     public ResponseEntity<?> addGroup(@RequestBody GroupDTO groupDTO) {
