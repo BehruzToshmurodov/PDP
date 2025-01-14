@@ -43,7 +43,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "https://etadoor.koyeb.app",
                 "https://anonymous-octopus-pdpteam-487d0d53.koyeb.app"*/
         ));
-        //config.setAllowCredentials(true);
+        config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
         source.registerCorsConfiguration("/**", config);
         return source;
