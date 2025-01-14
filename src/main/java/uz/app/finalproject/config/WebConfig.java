@@ -36,18 +36,19 @@ public class WebConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS" , "PATCH"));
-        config.setAllowedOriginPatterns(List.of(
-                "/**"
-                /*"http://localhost:8080",
+        config.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:8080",
                 "https://etadoor.koyeb.app",
-                "https://anonymous-octopus-pdpteam-487d0d53.koyeb.app"*/
+                "https://anonymous-octopus-pdpteam-487d0d53.koyeb.app",
+                "https://ishonch.koyeb.app"
         ));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
 
 
 }
