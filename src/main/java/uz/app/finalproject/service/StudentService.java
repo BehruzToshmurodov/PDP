@@ -12,6 +12,7 @@ import uz.app.finalproject.repository.GroupRepository;
 import uz.app.finalproject.repository.StudentRepository;
 import uz.app.finalproject.repository.UserRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -113,7 +114,7 @@ public class StudentService {
                 Student student = foundStudent.get();
                 student.setFirstname(studentDTO.getFirstname());
                 student.setLastname(studentDTO.getLastname());
-                student.setPassword(student.getPassword());
+                student.setPassword(studentDTO.getPassword());
                 student.setPhoneNumber(studentDTO.getPhoneNumber());
 
                 studentRepository.save(student);
@@ -144,9 +145,9 @@ public class StudentService {
                     student.setStatus(Status.ARCHIVE);
 
 
-                   if ( student.getGroup() != null){
-                       student.setGroup(null);
-                   }
+                    if (student.getGroup() != null) {
+                        student.setGroup(null);
+                    }
 
                     studentRepository.save(student);
 
@@ -193,7 +194,6 @@ public class StudentService {
 
     public ResponseEntity<?> attendance(Long id) {
         try {
-
             Optional<Student> byId = studentRepository.findById(id);
             if (byId.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK)
@@ -202,22 +202,26 @@ public class StudentService {
 
             Student student = byId.get();
 
+            LocalDate today = LocalDate.now();
 
             Optional<Attendance> existingAttendance = attendanceRepository
-                    .findByStudentAndAttendanceDate(student, LocalDateTime.now().toLocalDate().atStartOfDay());
+                    .findByStudentAndAttendanceDate(student, today);
 
             if (existingAttendance.isPresent()) {
                 Attendance attendance = existingAttendance.get();
-                attendance.setAttended(false);
+                attendance.setAttended(!attendance.isAttended());
                 attendanceRepository.save(attendance);
 
+                String message = attendance.isAttended()
+                        ? "Student marked as attended"
+                        : "Student marked as not attended";
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseMessage("Student marked as not attended", null, true));
+                        .body(new ResponseMessage(message, null, true));
             }
 
             Attendance newAttendance = new Attendance();
             newAttendance.setStudent(student);
-            newAttendance.setAttendanceDate(LocalDateTime.now());
+            newAttendance.setAttendanceDate(today);
             newAttendance.setAttended(true);
             attendanceRepository.save(newAttendance);
 
@@ -227,6 +231,5 @@ public class StudentService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseMessage("Error processing attendance: " + e.getMessage(), null, false));
         }
-
     }
 }
