@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uz.app.finalproject.entity.Enums.Days;
+import uz.app.finalproject.entity.Enums.Status;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +29,7 @@ public class Groups {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double groupPrice = 0.0;
-    private String status = "ACTIVE";
+    private Status status = Status.ACTIVE;
 
 
 }

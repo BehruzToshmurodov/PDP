@@ -36,7 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "PUT", "POST", "DELETE", "OPTIONS" , "PATCH")); // Allow all standard HTTP methods
+        config.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS" , "PATCH"));
         config.setAllowedOriginPatterns(List.of(
                 "/**"
                 /*"http://localhost:8080",

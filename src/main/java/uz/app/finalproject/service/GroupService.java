@@ -27,7 +27,7 @@ public class GroupService {
 
     public ResponseEntity<?> groupsActive() {
 
-        List<Groups> activeGroups = groupRepository.findByStatus("ACTIVE");
+        List<Groups> activeGroups = groupRepository.findAllByStatus(Status.ACTIVE);
 
         if (activeGroups != null && !activeGroups.isEmpty()) {
             return ResponseEntity.ok(new ResponseMessage("All active groups", activeGroups, true));
@@ -40,7 +40,7 @@ public class GroupService {
 
     public ResponseEntity<?> groupsArxiv() {
 
-        List<Groups> arxivGroups = groupRepository.findByStatus("ARCHIVE");
+        List<Groups> arxivGroups = groupRepository.findAllByStatus(Status.ARCHIVE);
 
         if (arxivGroups != null && !arxivGroups.isEmpty()) {
             return ResponseEntity.ok(new ResponseMessage("Archived groups", arxivGroups, true));
@@ -58,7 +58,7 @@ public class GroupService {
                     .body(new ResponseMessage("Invalid group data provided", null, false));
         }
 
-        if (groupRepository.existsByGroupNameAndStatusNot(groupDTO.getGroupName(), "ARCHIVE")) {
+        if (groupRepository.existsByGroupNameAndStatusNot(groupDTO.getGroupName(), Status.ARCHIVE)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseMessage("Group with this name already exists", null, false));
         }
@@ -85,7 +85,7 @@ public class GroupService {
         Groups groups = new Groups();
         groups.setDays(groupDTO.getDays());
         groups.setGroupName(groupDTO.getGroupName());
-        groups.setStatus("ACTIVE");
+        groups.setStatus(Status.ACTIVE);
         groups.setStartTime(groupDTO.getStartTime());
         groups.setTeacher(teacher);
         groups.setStartDate(groupDTO.getStartDate());
@@ -106,7 +106,7 @@ public class GroupService {
                     .body(new ResponseMessage("Search term cannot be empty", null, false));
         }
 
-        List<Groups> groups = groupRepository.findAllByGroupNameContainsAndStatusEquals(search, "ACTIVE");
+        List<Groups> groups = groupRepository.findAllByGroupNameContainsAndStatusEquals(search, Status.ACTIVE);
 
         if (groups.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -155,7 +155,7 @@ public class GroupService {
         System.out.println("phone number changed");
         group.setDays(groupDTO.getDays());
         System.out.println("days changed");
-        group.setStatus("ACTIVE");
+        group.setStatus(Status.ACTIVE);
         group.setStartTime(groupDTO.getStartTime());
         System.out.println("start time changed");
         group.setTeacher(teacher.get());
@@ -185,12 +185,12 @@ public class GroupService {
 
         Groups group = groupOptional.get();
 
-        if ("ARCHIVE".equals(group.getStatus())) {
+        if (Status.ARCHIVE.equals(group.getStatus())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseMessage("Group can't be deleted because it is already archived!", null, false));
         }
 
-        group.setStatus("ARCHIVE");
+        group.setStatus(Status.ARCHIVE);
         groupRepository.save(group);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -311,9 +311,9 @@ public class GroupService {
 
         return switch (status) {
             case "ACTIVE" ->
-                    ResponseEntity.ok(new ResponseMessage("Active groups", groupRepository.findAllByStatus("ACTIVE"), true));
+                    ResponseEntity.ok(new ResponseMessage("Active groups", groupRepository.findAllByStatus(Status.ACTIVE), true));
             case "ARCHIVE" ->
-                    ResponseEntity.ok(new ResponseMessage("Archived groups", groupRepository.findAllByStatus("ARCHIVE"), true));
+                    ResponseEntity.ok(new ResponseMessage("Archived groups", groupRepository.findAllByStatus(Status.ACTIVE), true));
             default -> ResponseEntity.ok(new ResponseMessage("Invalid status", null, false));
         };
 
