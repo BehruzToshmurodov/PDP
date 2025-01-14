@@ -119,6 +119,8 @@ public class GroupService {
 
 
     public ResponseEntity<?> updateGroup(GroupDTO groupDTO, String id) {
+
+        System.out.println("update starting !");
         if (id == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage("Invalid group ID", null, false));
