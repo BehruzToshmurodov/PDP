@@ -36,7 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedHeaders(List.of("*")); // Allow all headers
-        config.setAllowedMethods(List.of("GET", "PUT", "POST", "DELETE", "OPTIONS")); // Allow all standard HTTP methods
+        config.setAllowedMethods(List.of("GET", "PUT", "POST", "DELETE", "OPTIONS" , "PATCH")); // Allow all standard HTTP methods
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:8080", // For local development
                 "https://etadoor.koyeb.app", // Your app's Koyeb domain
