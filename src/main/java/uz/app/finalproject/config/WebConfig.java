@@ -19,36 +19,25 @@ public class WebConfig implements WebMvcConfigurer {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(c -> c.disable())
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
-                .userDetailsService(userDetailsService())
                 .authorizeRequests(auth -> auth.anyRequest().permitAll())
                 .build();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return (username) -> {
-            return null;
-        };
+        return username -> null;
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS", "PATCH"));
-        config.setAllowedOrigins(List.of(
-                "http://localhost:8080",
-                "https://etadoor.koyeb.app",
-                "https://anonymous-octopus-pdpteam-487d0d53.koyeb.app",
-                "https://ishonch.koyeb.app"
-        ));
+        config.setAllowedMethods(List.of("*"));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
-
-
 }
