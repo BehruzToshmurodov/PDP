@@ -19,10 +19,13 @@ public class Groups {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String groupName;
+    private String courseName;
     @ManyToOne
     private User teacher;
     @ManyToOne
     private Room room;
+    @ManyToMany
+    private List<Student> students;
     private Integer stNumber = 0;
     private List<Days> days;
     private String startTime;

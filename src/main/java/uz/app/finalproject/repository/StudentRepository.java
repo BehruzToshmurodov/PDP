@@ -10,9 +10,7 @@ import java.util.List;
 public interface StudentRepository extends JpaRepository<Student , Long> {
     List<Student> findAllByStatus(Status status);
 
-    List<Student> findAllByFirstnameContainingOrLastnameContainingAndStatusNot(String firstname, String lastname, Status status);
-
     List<Student> findAllByFirstnameContainingAndStatusNotOrLastnameContainingAndStatusNot(String firstname , Status status , String lastname , Status status1);
 
-    List<Student> findAllByGroupAndStatus(Groups groups, Status status);
+    List<Student> findAllByAddedGroupAndStatus(Boolean added, Status status);
 }
