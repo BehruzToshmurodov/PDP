@@ -317,16 +317,15 @@ public class GroupService {
     }
 
     public ResponseEntity<?> getGroups(String status) {
+        if ("ACTIVE".equals(status)) {
+            return ResponseEntity.ok(new ResponseMessage("Active groups", groupRepository.findAllByStatus(Status.ACTIVE), true));
+        } else if ("ARCHIVE".equals(status)) {
+            return ResponseEntity.ok(new ResponseMessage("Archived groups", groupRepository.findAllByStatus(Status.ARCHIVE), true));
+        } else {
+            return ResponseEntity.ok(new ResponseMessage("Invalid status", null, false));
+        }
 
-        return switch (status) {
-            case "ACTIVE" ->
-                    ResponseEntity.ok(new ResponseMessage("Active groups", groupRepository.findAllByStatus(Status.ACTIVE), true));
-            case "ARCHIVE" ->
-                    ResponseEntity.ok(new ResponseMessage("Archived groups", groupRepository.findAllByStatus(Status.ACTIVE), true));
-            default -> ResponseEntity.ok(new ResponseMessage("Invalid status", null, false));
-        };
-
-    }
+}
 
     public ResponseEntity<?> profile(Long groupId) {
 
