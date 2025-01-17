@@ -10,10 +10,8 @@ import uz.app.finalproject.entity.Enums.Status;
 import uz.app.finalproject.repository.AttendanceRepository;
 import uz.app.finalproject.repository.GroupRepository;
 import uz.app.finalproject.repository.StudentRepository;
-import uz.app.finalproject.repository.UserRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
