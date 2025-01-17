@@ -10,10 +10,8 @@ import uz.app.finalproject.entity.Enums.Status;
 import uz.app.finalproject.repository.AttendanceRepository;
 import uz.app.finalproject.repository.GroupRepository;
 import uz.app.finalproject.repository.StudentRepository;
-import uz.app.finalproject.repository.UserRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +21,7 @@ public class StudentService {
 
     final AttendanceRepository attendanceRepository;
     final StudentRepository studentRepository;
+    final GroupRepository groupRepository;
 
 
     public ResponseEntity<?> addStudent(StudentDTO studentDTO) {
@@ -139,13 +138,17 @@ public class StudentService {
             if (byId.isPresent()) {
                 Student student = byId.get();
 
+                Groups byStudentsId = groupRepository.findByStudentsId(student.getId());
+
+                if (byStudentsId!= null) {
+                    byStudentsId.getStudents().remove(student);
+                    groupRepository.save(byStudentsId);
+                }
+
                 if (student.getStatus().equals(Status.ACTIVE)) {
                     student.setStatus(Status.ARCHIVE);
 
-
-                    if (student.getGroup() != null) {
-                        student.setGroup(null);
-                    }
+                    student.setAddedGroup(false);
 
                     studentRepository.save(student);
 
@@ -201,7 +204,7 @@ public class StudentService {
             Student student = byId.get();
 
 
-            if (student.getGroup() != null) {
+            if (student.getAddedGroup()) {
                 LocalDate today = LocalDate.now();
 
                 Optional<Attendance> existingAttendance = attendanceRepository

@@ -18,6 +18,7 @@ import java.util.List;
 public class GroupDTO {
 
     private String groupName;
+    private String courseName;
     private String teacherId;
     private String roomId;
     private List<Days> days;

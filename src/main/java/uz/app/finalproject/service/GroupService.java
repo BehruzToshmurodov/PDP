@@ -25,35 +25,35 @@ public class GroupService {
 
 
 
-    public ResponseEntity<?> groupsActive() {
-
-        List<Groups> activeGroups = groupRepository.findAllByStatus(Status.ACTIVE);
-
-        if (activeGroups != null && !activeGroups.isEmpty()) {
-            return ResponseEntity.ok(new ResponseMessage("All active groups", activeGroups, true));
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ResponseMessage("No active groups found", null, false));
-    }
-
-
-    public ResponseEntity<?> groupsArxiv() {
-
-        List<Groups> arxivGroups = groupRepository.findAllByStatus(Status.ARCHIVE);
-
-        if (arxivGroups != null && !arxivGroups.isEmpty()) {
-            return ResponseEntity.ok(new ResponseMessage("Archived groups", arxivGroups, true));
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ResponseMessage("No archived groups found", null, false));
-    }
+//    public ResponseEntity<?> groupsActive() {
+//
+//        List<Groups> activeGroups = groupRepository.findAllByStatus(Status.ACTIVE);
+//
+//        if (activeGroups != null && !activeGroups.isEmpty()) {
+//            return ResponseEntity.ok(new ResponseMessage("All active groups", activeGroups, true));
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                .body(new ResponseMessage("No active groups found", null, false));
+//    }
+//
+//
+//    public ResponseEntity<?> groupsArxiv() {
+//
+//        List<Groups> arxivGroups = groupRepository.findAllByStatus(Status.ARCHIVE);
+//
+//        if (arxivGroups != null && !arxivGroups.isEmpty()) {
+//            return ResponseEntity.ok(new ResponseMessage("Archived groups", arxivGroups, true));
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                .body(new ResponseMessage("No archived groups found", null, false));
+//    }
 
 
     public ResponseEntity<?> addGroup(GroupDTO groupDTO) {
 
-        if (groupDTO == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
+        if (  groupDTO == null || groupDTO.getCourseName() == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage("Invalid group data provided", null, false));
         }
@@ -82,6 +82,16 @@ public class GroupService {
                     .body(new ResponseMessage("Room not found", null, false));
         }
 
+        Room room1 = room.get();
+
+        saveGroup(groupDTO , teacher , room1) ;
+
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ResponseMessage("Group added successfully", groupDTO, true));
+    }
+
+    private void saveGroup(GroupDTO groupDTO, User teacher, Room room) {
         Groups groups = new Groups();
         groups.setDays(groupDTO.getDays());
         groups.setGroupName(groupDTO.getGroupName());
@@ -90,13 +100,11 @@ public class GroupService {
         groups.setTeacher(teacher);
         groups.setStartDate(groupDTO.getStartDate());
         groups.setEndDate(groupDTO.getEndDate());
+        groups.setCourseName(groupDTO.getCourseName());
         groups.setGroupPrice(groupDTO.getGroupPrice());
         groups.setStNumber(0);
-        groups.setRoom(room.get());
+        groups.setRoom(room);
         groupRepository.save(groups);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseMessage("Group added successfully", groupDTO, true));
     }
 
 
@@ -211,7 +219,7 @@ public class GroupService {
 
             Groups group = byId.get();
 
-            List<Student> students = studentRepository.findAllByGroupAndStatus(group , Status.ACTIVE);
+            List<Student> students = group.getStudents();
 
             if (students.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK)
@@ -242,7 +250,7 @@ public class GroupService {
 
             Groups group = groupOptional.get();
 
-            List<Student> students = studentRepository.findAllByGroupAndStatus(group , Status.ACTIVE);
+            List<Student> students = group.getStudents();
 
             if (students.isEmpty()) {
                 return ResponseEntity.ok(new ResponseMessage(
@@ -284,8 +292,9 @@ public class GroupService {
 
         Groups group = groupsOptional.get();
 
-        student.setGroup(group);
+        student.setAddedGroup(true);
         group.setStNumber(group.getStNumber()+1);
+        group.getStudents().add(student);
 
         studentRepository.save(student);
         groupRepository.save(group);
@@ -297,7 +306,7 @@ public class GroupService {
 
     public ResponseEntity<?> getStudentWithoutGroup() {
 
-        List<Student> students = studentRepository.findAllByGroupAndStatus(null , Status.ACTIVE);
+        List<Student> students = studentRepository.findAllByAddedGroupAndStatus(false , Status.ACTIVE);
 
         if (students.isEmpty()) {
             return ResponseEntity.ok(new ResponseMessage("No students without a group", students, true));
@@ -329,9 +338,7 @@ public class GroupService {
 
         Groups group = byId.get();
 
-        List<Student> students = studentRepository.findAllByGroupAndStatus(group, Status.ACTIVE);
-
-       return ResponseEntity.ok(new ResponseMessage("Group information" , List.of(group , students) , true));
+       return ResponseEntity.ok(new ResponseMessage("Group information" , group  , true));
 
     }
 }
