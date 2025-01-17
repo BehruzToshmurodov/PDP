@@ -18,8 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(c -> c.disable())
-                .cors(c -> c.configurationSource(corsConfigurationSource()))
-                .authorizeRequests(auth -> auth.anyRequest().permitAll())
+                .cors(c -> c.configurationSource(corsConfigurationSource())).authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .build();
     }
 
