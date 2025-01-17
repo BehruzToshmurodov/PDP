@@ -1,11 +1,13 @@
 package uz.app.finalproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import uz.app.finalproject.entity.FInance;
+import uz.app.finalproject.entity.Finance;
 
-public interface FinanceRepository extends JpaRepository<FInance, Integer> {
+import java.time.LocalDate;
+import java.util.List;
 
+public interface FinanceRepository extends JpaRepository<Finance, Long> {
 
-
+    List<Finance> findAllByDateBetween(LocalDate startDate , LocalDate endDate);
 
 }

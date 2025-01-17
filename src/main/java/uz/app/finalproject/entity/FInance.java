@@ -14,10 +14,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class FInance {
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Finance {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private LocalDate date;
     private String Category;
