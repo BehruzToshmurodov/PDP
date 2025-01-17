@@ -25,12 +25,12 @@ public class FinanceService {
 
     }
 
-    public ResponseEntity<?> update(Integer id, FinanceDTO financeDTO) {
+    public ResponseEntity<?> update(Long id, FinanceDTO financeDTO) {
 
 
     }
 
-    public ResponseEntity<?> delete(Integer id) {
+    public ResponseEntity<?> delete(Long id) {
 
 
     }
