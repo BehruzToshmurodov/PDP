@@ -243,4 +243,19 @@ public class StaffService {
         }
     }
 
+    public ResponseEntity<?> profile(Long id) {
+
+        Optional<User> userOptional = staffRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            List<Groups> groups = groupRepository.findAllByTeacher(user);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("User info", List.of(user , groups), true));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage("Staff not found" , null , false));
+
+    }
 }
