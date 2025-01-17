@@ -38,5 +38,9 @@ public class StaffController {
 
     }
 
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<?> profile(@PathVariable Long id) {
+        return staffService.profile(id);
+    }
 
 }
