@@ -13,4 +13,6 @@ public interface StudentRepository extends JpaRepository<Student , Long> {
     List<Student> findAllByFirstnameContainingAndStatusNotOrLastnameContainingAndStatusNot(String firstname , Status status , String lastname , Status status1);
 
     List<Student> findAllByAddedGroupAndStatus(Boolean added, Status status);
+
+    Integer countByStatusNotIn(List<Status> status);
 }

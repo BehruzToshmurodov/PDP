@@ -42,4 +42,9 @@ public class FinanceController {
         return financeService.filter(startDate, endDate);
     }
 
+    @GetMapping("/courseFees")
+    public ResponseEntity<?> getCourseFees() {
+       return  financeService.getCourseFee();
+    }
+
 }

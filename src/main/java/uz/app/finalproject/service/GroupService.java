@@ -199,6 +199,12 @@ public class GroupService {
         }
 
         group.setStatus(Status.ARCHIVE);
+
+        for (Student student : group.getStudents()) {
+            student.setStatus(Status.ARCHIVE);
+            studentRepository.save(student);
+        }
+
         groupRepository.save(group);
 
         return ResponseEntity.status(HttpStatus.OK)

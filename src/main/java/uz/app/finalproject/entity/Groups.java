@@ -31,7 +31,7 @@ public class Groups {
     private String startTime;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Double groupPrice = 0.0;
+    private Integer groupPrice = 0 ;
     private Status status = Status.ACTIVE;
 
 

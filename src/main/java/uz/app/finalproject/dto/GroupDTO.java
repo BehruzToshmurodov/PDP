@@ -25,7 +25,7 @@ public class GroupDTO {
     private String startTime;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Double groupPrice;
+    private Integer groupPrice;
 
 
 }

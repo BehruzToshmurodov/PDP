@@ -146,7 +146,7 @@ public class StudentService {
                 }
 
                 if (student.getStatus().equals(Status.ACTIVE)) {
-                    student.setStatus(Status.ARCHIVE);
+                    student.setStatus(Status.ACTIVELY_LEFT);
 
                     student.setAddedGroup(false);
 

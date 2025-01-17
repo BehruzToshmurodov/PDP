@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import uz.app.finalproject.dto.CourseFeeDTO;
 import uz.app.finalproject.dto.FinanceDTO;
 import uz.app.finalproject.entity.Finance;
+import uz.app.finalproject.entity.Groups;
 import uz.app.finalproject.entity.ResponseMessage;
 import uz.app.finalproject.repository.FinanceRepository;
+import uz.app.finalproject.repository.GroupRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +22,7 @@ import java.util.Optional;
 public class FinanceService {
 
      final FinanceRepository financeRepository;
+     final GroupRepository groupRepository;
 
 
     public ResponseEntity<?> createFinance( FinanceDTO financeDTO) {
@@ -44,7 +49,12 @@ public class FinanceService {
 
     public ResponseEntity<?> getFinances() {
         List<Finance> finances = financeRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("All finances" , finances , true));
+        double allAmount = 0.0;
+        for (Finance finance : finances) {
+           allAmount = allAmount + finance.getAmount();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("All finances" , List.of(finances , allAmount) , true));
     }
 
     public ResponseEntity<?> update(Long id, FinanceDTO financeDTO) {
@@ -74,8 +84,37 @@ public class FinanceService {
 
     public ResponseEntity<?> filter(LocalDate startDate, LocalDate endDate) {
 
-        List<Finance> finances = financeRepository.findAllByDateBetween(startDate, endDate);
 
-        return ResponseEntity.ok().body(new ResponseMessage("Finances" , finances , true));
+        List<Finance> allFinances = financeRepository.findAll();
+
+        if (allFinances.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("No finances found", null, false));
+        }
+
+        List<Finance> finances = allFinances.stream()
+                .filter(finance -> finance.getDate() != null)
+                .filter(finance -> !finance.getDate().isBefore(startDate))
+                .filter(finance -> !finance.getDate().isAfter(endDate))
+                .toList();
+
+        if (finances.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("No finances found within the specified date range", null, false));
+        }
+
+        return ResponseEntity.ok().body(new ResponseMessage("Finances", finances, true));
+    }
+
+    public ResponseEntity<?> getCourseFee() {
+
+        List<CourseFeeDTO> courseFee = new ArrayList<>();
+
+        for (Groups groups : groupRepository.findAll()) {
+            courseFee.add(new CourseFeeDTO(groups.getCourseName() , groups.getGroupPrice()));
+        }
+
+        return ResponseEntity.ok().body(new ResponseMessage("Course fees", courseFee, true));
+
     }
 }
