@@ -1,6 +1,5 @@
 package uz.app.finalproject.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,11 +17,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class FinanceService {
 
      final FinanceRepository financeRepository;
      final GroupRepository groupRepository;
+
+    public FinanceService(FinanceRepository financeRepository, GroupRepository groupRepository) {
+        this.financeRepository = financeRepository;
+        this.groupRepository = groupRepository;
+    }
 
 
     public ResponseEntity<?> createFinance( FinanceDTO financeDTO) {

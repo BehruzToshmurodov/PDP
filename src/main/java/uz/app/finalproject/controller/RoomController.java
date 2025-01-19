@@ -1,6 +1,6 @@
 package uz.app.finalproject.controller;
 
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.app.finalproject.dto.RoomDTO;
@@ -14,10 +14,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/room")
-@RequiredArgsConstructor
 public class RoomController {
 
     private final RoomService roomService;
+
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
+    }
 
     @GetMapping
     public ResponseEntity<?> getRooms() {

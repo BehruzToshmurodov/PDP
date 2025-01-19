@@ -1,6 +1,5 @@
 package uz.app.finalproject.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.app.finalproject.dto.StudentDTO;
@@ -18,10 +17,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/student")
-@RequiredArgsConstructor
+
 public class StudentController {
 
     private final StudentService studentService;
+
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
 
 
     @PostMapping("/add")

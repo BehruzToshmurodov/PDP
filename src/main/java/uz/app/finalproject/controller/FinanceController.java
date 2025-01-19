@@ -1,6 +1,5 @@
 package uz.app.finalproject.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.app.finalproject.dto.FinanceDTO;
@@ -10,9 +9,13 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/finance")
-@RequiredArgsConstructor
+
 public class FinanceController {
     private final FinanceService financeService;
+
+    public FinanceController(FinanceService financeService) {
+        this.financeService = financeService;
+    }
 
 
     @GetMapping()

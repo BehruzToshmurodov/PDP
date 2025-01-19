@@ -1,6 +1,6 @@
 package uz.app.finalproject.controller;
 
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +16,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/dashboard")
-@RequiredArgsConstructor
 public class Home {
+
     final StudentRepository studentRepository;
     final GroupRepository groupRepository;
     final UserRepository staffRepository;
+
+    public Home(StudentRepository studentRepository, GroupRepository groupRepository, UserRepository staffRepository) {
+        this.studentRepository = studentRepository;
+        this.groupRepository = groupRepository;
+        this.staffRepository = staffRepository;
+    }
 
     @GetMapping
     public ResponseEntity<?> home() {

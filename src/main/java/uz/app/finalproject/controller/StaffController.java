@@ -1,6 +1,5 @@
 package uz.app.finalproject.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.app.finalproject.dto.StatusDTO;
@@ -10,11 +9,14 @@ import uz.app.finalproject.service.StaffService;
 
 @RestController
 @RequestMapping("/staff")
-@RequiredArgsConstructor
 public class StaffController {
 
 
     private final StaffService staffService;
+
+    public StaffController(StaffService staffService) {
+        this.staffService = staffService;
+    }
 
 
     @GetMapping("/{status}")

@@ -1,6 +1,5 @@
 package uz.app.finalproject.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.app.finalproject.dto.GroupDTO;
@@ -18,10 +17,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/group")
-@RequiredArgsConstructor
 public class GroupController {
 
     private final GroupService groupService;
+
+    public GroupController(GroupService groupService) {
+        this.groupService = groupService;
+    }
 
 //    @GetMapping("/active")
 //    public ResponseEntity<?> groupsActive() {

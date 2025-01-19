@@ -1,6 +1,6 @@
 package uz.app.finalproject.service;
 
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,11 +18,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class RoomService {
 
     final RoomRepository repository;
     final GroupRepository groupRepository;
+
+    public RoomService(RoomRepository repository, GroupRepository groupRepository) {
+        this.repository = repository;
+        this.groupRepository = groupRepository;
+    }
 
 
     public ResponseEntity<?> getRooms() {
