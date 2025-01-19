@@ -15,7 +15,7 @@ public class Finance {
     private Long id;
     private String name;
     private LocalDate date;
-    private String Category;
+    private String category;
     private String receiver;
     private Double amount;
 
@@ -24,7 +24,7 @@ public class Finance {
         this.id = id;
         this.name = name;
         this.date = date;
-        Category = category;
+        category = category;
         this.receiver = receiver;
         this.amount = amount;
     }
@@ -57,11 +57,11 @@ public class Finance {
     }
 
     public String getCategory() {
-        return Category;
+        return category;
     }
 
     public void setCategory(String category) {
-        Category = category;
+        this.category = category;
     }
 
     public String getReceiver() {
