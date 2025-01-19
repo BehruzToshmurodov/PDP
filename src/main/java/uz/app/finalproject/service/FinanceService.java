@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uz.app.finalproject.dto.CourseFeeDTO;
 import uz.app.finalproject.dto.FinanceDTO;
+import uz.app.finalproject.entity.Finance;
 import uz.app.finalproject.entity.Groups;
 import uz.app.finalproject.entity.ResponseMessage;
 import uz.app.finalproject.repository.FinanceRepository;
