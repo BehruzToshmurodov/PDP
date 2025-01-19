@@ -1,6 +1,7 @@
 package uz.app.finalproject.service;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+
 public class StudentService {
 
     final AttendanceRepository attendanceRepository;
@@ -23,12 +26,6 @@ public class StudentService {
     final StudentRepository studentRepository;
 
     final GroupRepository groupRepository;
-
-    public StudentService(AttendanceRepository attendanceRepository, StudentRepository studentRepository, GroupRepository groupRepository) {
-        this.attendanceRepository = attendanceRepository;
-        this.studentRepository = studentRepository;
-        this.groupRepository = groupRepository;
-    }
 
 
     public ResponseEntity<?> addStudent(StudentDTO studentDTO) {
@@ -147,7 +144,7 @@ public class StudentService {
 
                 Groups byStudentsId = groupRepository.findByStudentsId(student.getId());
 
-                if (byStudentsId!= null) {
+                if (byStudentsId != null) {
                     byStudentsId.getStudents().remove(student);
                     groupRepository.save(byStudentsId);
                 }

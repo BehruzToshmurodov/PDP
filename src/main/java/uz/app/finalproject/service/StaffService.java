@@ -1,6 +1,7 @@
 package uz.app.finalproject.service;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+
 public class StaffService {
 
     final UserRepository staffRepository;
     final GroupRepository groupRepository;
-
-    public StaffService(UserRepository staffRepository, GroupRepository groupRepository) {
-        this.staffRepository = staffRepository;
-        this.groupRepository = groupRepository;
-    }
 
 
 //    public ResponseEntity<?> getStaffs() {

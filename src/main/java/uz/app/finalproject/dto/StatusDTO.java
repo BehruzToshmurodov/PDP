@@ -1,21 +1,14 @@
 package uz.app.finalproject.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class StatusDTO {
+
    private String status;
 
-   public StatusDTO(String status) {
-      this.status = status;
-   }
-
-   public StatusDTO() {
-   }
-
-
-   public String getStatus() {
-      return status;
-   }
-
-   public void setStatus(String status) {
-      this.status = status;
-   }
 }

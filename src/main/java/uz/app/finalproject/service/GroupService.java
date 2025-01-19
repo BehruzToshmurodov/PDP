@@ -1,6 +1,7 @@
 package uz.app.finalproject.service;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-
+@RequiredArgsConstructor
 public class GroupService {
 
     final GroupRepository groupRepository;
@@ -22,14 +23,6 @@ public class GroupService {
     final RoomRepository roomRepository;
     final AttendanceRepository attendanceRepository;
     final StudentRepository studentRepository;
-
-    public GroupService(GroupRepository groupRepository, UserRepository userRepository, RoomRepository roomRepository, AttendanceRepository attendanceRepository, StudentRepository studentRepository) {
-        this.groupRepository = groupRepository;
-        this.userRepository = userRepository;
-        this.roomRepository = roomRepository;
-        this.attendanceRepository = attendanceRepository;
-        this.studentRepository = studentRepository;
-    }
 
 
 //    public ResponseEntity<?> groupsActive() {

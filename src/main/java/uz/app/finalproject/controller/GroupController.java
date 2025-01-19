@@ -1,5 +1,6 @@
 package uz.app.finalproject.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.app.finalproject.dto.GroupDTO;
@@ -17,13 +18,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/group")
+@RequiredArgsConstructor
 public class GroupController {
 
     private final GroupService groupService;
 
-    public GroupController(GroupService groupService) {
-        this.groupService = groupService;
-    }
 
 //    @GetMapping("/active")
 //    public ResponseEntity<?> groupsActive() {
@@ -37,13 +36,13 @@ public class GroupController {
 
 
     @GetMapping("/{status}")
-    public ResponseEntity<?> getGroupByStatus(@PathVariable String status){
-       return groupService.getGroups(status);
+    public ResponseEntity<?> getGroupByStatus(@PathVariable String status) {
+        return groupService.getGroups(status);
     }
 
     @GetMapping("/profile/{groupId}")
-    public ResponseEntity<?> profile(@PathVariable Long groupId){
-       return groupService.profile(groupId);
+    public ResponseEntity<?> profile(@PathVariable Long groupId) {
+        return groupService.profile(groupId);
     }
 
 
@@ -75,7 +74,7 @@ public class GroupController {
 
 
     @GetMapping("/attendance/{groupId}")
-    public ResponseEntity<?> attendance(@PathVariable Long groupId){
+    public ResponseEntity<?> attendance(@PathVariable Long groupId) {
         return groupService.getAttendanceByGroupStudents(groupId);
     }
 
@@ -86,11 +85,9 @@ public class GroupController {
     }
 
     @PostMapping("/addNewReader/{studentId}/{groupId}")
-    public ResponseEntity<?> addNewReader(@PathVariable Long studentId , @PathVariable Long groupId) {
-       return groupService.addNewReaderToGroup(studentId , groupId);
+    public ResponseEntity<?> addNewReader(@PathVariable Long studentId, @PathVariable Long groupId) {
+        return groupService.addNewReaderToGroup(studentId, groupId);
     }
-
-
 
 
 }
