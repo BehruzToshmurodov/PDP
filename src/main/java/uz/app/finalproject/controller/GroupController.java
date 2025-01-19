@@ -4,17 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.app.finalproject.dto.GroupDTO;
-import uz.app.finalproject.entity.Groups;
-import uz.app.finalproject.entity.ResponseMessage;
-import uz.app.finalproject.entity.Room;
-import uz.app.finalproject.entity.User;
-import uz.app.finalproject.repository.GroupRepository;
-import uz.app.finalproject.repository.RoomRepository;
-import uz.app.finalproject.repository.UserRepository;
+
 import uz.app.finalproject.service.GroupService;
 
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/group")
@@ -87,6 +79,18 @@ public class GroupController {
     @PostMapping("/addNewReader/{studentId}/{groupId}")
     public ResponseEntity<?> addNewReader(@PathVariable Long studentId, @PathVariable Long groupId) {
         return groupService.addNewReaderToGroup(studentId, groupId);
+    }
+
+
+    @PostMapping("/groups_attendances/{groupId}")
+    public ResponseEntity<?> groupAttendance(@PathVariable Long groupId){
+        return groupService.attendanceGroup(groupId);
+    }
+
+
+    @GetMapping("group_and_attendance/{teacherId}")
+    public ResponseEntity<?> groupAndAttendance(@PathVariable Long teacherId){
+        return groupService.getGroupsAndAttendancesByTeacherId(teacherId);
     }
 
 

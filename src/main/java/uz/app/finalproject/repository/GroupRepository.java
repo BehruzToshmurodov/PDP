@@ -28,4 +28,5 @@ public interface GroupRepository extends JpaRepository<Groups, Long> {
 
     Integer countByStatus(Status status);
 
+    List<Groups> findByTeacherId(Long teacherId);
 }

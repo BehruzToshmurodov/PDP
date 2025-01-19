@@ -11,8 +11,9 @@ import uz.app.finalproject.entity.*;
 import uz.app.finalproject.entity.Enums.Status;
 import uz.app.finalproject.repository.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class GroupService {
     final RoomRepository roomRepository;
     final AttendanceRepository attendanceRepository;
     final StudentRepository studentRepository;
+    final GroupAttendanceRepository groupAttendanceRepository;
 
 
 //    public ResponseEntity<?> groupsActive() {
@@ -53,7 +55,7 @@ public class GroupService {
 
     public ResponseEntity<?> addGroup(GroupDTO groupDTO) {
 
-        if (  groupDTO == null || groupDTO.getCourseName() == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
+        if (groupDTO == null || groupDTO.getCourseName() == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage("Invalid group data provided", null, false));
         }
@@ -84,7 +86,7 @@ public class GroupService {
 
         Room room1 = room.get();
 
-        saveGroup(groupDTO , teacher , room1) ;
+        saveGroup(groupDTO, teacher, room1);
 
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -212,8 +214,6 @@ public class GroupService {
     }
 
 
-
-
     public ResponseEntity<?> showStudentByGroupId(String id) {
         try {
             Optional<Groups> byId = groupRepository.findById(Long.valueOf(id));
@@ -242,7 +242,6 @@ public class GroupService {
                     .body(new ResponseMessage("Error retrieving students: " + e.getMessage(), null, false));
         }
     }
-
 
 
     public ResponseEntity<?> getAttendanceByGroupStudents(@PathVariable Long groupId) {
@@ -284,7 +283,7 @@ public class GroupService {
         Optional<Student> studentOptional = studentRepository.findById(studentId);
         if (studentOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
-                   .body(new ResponseMessage("Student not found", null, false));
+                    .body(new ResponseMessage("Student not found", null, false));
         }
 
         Student student = studentOptional.get();
@@ -293,13 +292,13 @@ public class GroupService {
 
         if (groupsOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
-                   .body(new ResponseMessage("Group not found", null, false));
+                    .body(new ResponseMessage("Group not found", null, false));
         }
 
         Groups group = groupsOptional.get();
 
         student.setAddedGroup(true);
-        group.setStNumber(group.getStNumber()+1);
+        group.setStNumber(group.getStNumber() + 1);
         group.getStudents().add(student);
 
         studentRepository.save(student);
@@ -307,12 +306,12 @@ public class GroupService {
 
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseMessage("Student added to group successfully" , student , true));
+                .body(new ResponseMessage("Student added to group successfully", student, true));
     }
 
     public ResponseEntity<?> getStudentWithoutGroup() {
 
-        List<Student> students = studentRepository.findAllByAddedGroupAndStatus(false , Status.ACTIVE);
+        List<Student> students = studentRepository.findAllByAddedGroupAndStatus(false, Status.ACTIVE);
 
         if (students.isEmpty()) {
             return ResponseEntity.ok(new ResponseMessage("No students without a group", students, true));
@@ -331,19 +330,108 @@ public class GroupService {
             return ResponseEntity.ok(new ResponseMessage("Invalid status", null, false));
         }
 
-}
+    }
 
     public ResponseEntity<?> profile(Long groupId) {
 
         Optional<Groups> byId = groupRepository.findById(groupId);
 
-        if ( byId.isEmpty()){
-            return ResponseEntity.ok(new ResponseMessage("Group not found" , null , false));
+        if (byId.isEmpty()) {
+            return ResponseEntity.ok(new ResponseMessage("Group not found", null, false));
         }
 
         Groups group = byId.get();
 
-       return ResponseEntity.ok(new ResponseMessage("Group information" , group  , true));
+        return ResponseEntity.ok(new ResponseMessage("Group information", group, true));
 
     }
+
+    public ResponseEntity<?> attendanceGroup(Long groupId) {
+
+        try {
+            Optional<Groups> byId = groupRepository.findById(groupId);
+            if (byId.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseMessage("Group not found", null, false));
+            }
+
+            Groups groups = byId.get();
+
+
+            LocalDate today = LocalDate.now();
+
+            Optional<GroupAttendance> groupAttendances = groupAttendanceRepository.findByGroupsAndDate(groups , today);
+
+            if (groupAttendances.isPresent()) {
+
+                GroupAttendance groupAttendance = groupAttendances.get();
+
+                groupAttendance.setAttended((!groupAttendance.getAttended()));
+                groupAttendanceRepository.save(groupAttendance);
+
+                String message = groupAttendance.getAttended()
+                        ? "Group attended marked as attended"
+                        : "Group attended as not attended";
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseMessage(message, null, true));
+            }
+
+            GroupAttendance newAttendance = new GroupAttendance();
+            newAttendance.setGroups(groups);
+            newAttendance.setDate(today);
+            newAttendance.setAttended(true);
+            groupAttendanceRepository.save(newAttendance);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseMessage("Group attendance recorded as attended", null, true));
+
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseMessage("Error processing attendance: " + e.getMessage(), null, false));
+        }
+
+
+    }
+
+    public ResponseEntity<?> getGroupsAndAttendancesByTeacherId(Long teacherId) {
+        try {
+            List<Groups> groupsList = groupRepository.findByTeacherId(teacherId);
+
+            if (groupsList.isEmpty()) {
+                throw new RuntimeException("Teacher not found or has no groups assigned");
+            }
+
+            List<Map<String, Object>> result = new ArrayList<>();
+
+            for (Groups group : groupsList) {
+                Map<String, Object> groupData = new HashMap<>();
+                groupData.put("teacher_fullName" , group.getTeacher().getFirstname() + " " + group.getTeacher().getLastname());
+                groupData.put("groupId", group.getId());
+                groupData.put("group_price" , group.getGroupPrice());
+                groupData.put("groupStatus", group.getStatus());
+                groupData.put("groupName", group.getGroupName());
+                groupData.put("courseName", group.getCourseName());
+
+                List<GroupAttendance> attendances = groupAttendanceRepository.findByGroups(group);
+                List<Map<String, Object>> simplifiedAttendances = attendances.stream().map(att -> {
+                    Map<String, Object> attData = new HashMap<>();
+                    attData.put("id", att.getId());
+                    attData.put("date", att.getDate());
+                    attData.put("attended", att.getAttended());
+                    return attData;
+                }).collect(Collectors.toList());
+
+                groupData.put("attendances", simplifiedAttendances);
+                result.add(groupData);
+            }
+
+            return ResponseEntity.ok(new ResponseMessage("groups and attendances", result, true));
+
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching groups and attendances: " + e.getMessage(), e);
+        }
+    }
+
 }
