@@ -82,13 +82,13 @@ public class GroupController {
     }
 
 
-    @PostMapping("/groups_attendances/{groupId}")
+    @PostMapping("/groupAttendance/{groupId}")
     public ResponseEntity<?> groupAttendance(@PathVariable Long groupId){
         return groupService.attendanceGroup(groupId);
     }
 
 
-    @GetMapping("group_and_attendance/{teacherId}")
+    @GetMapping("groups_and_attendances/{teacherId}")
     public ResponseEntity<?> groupAndAttendance(@PathVariable Long teacherId){
         return groupService.getGroupsAndAttendancesByTeacherId(teacherId);
     }
