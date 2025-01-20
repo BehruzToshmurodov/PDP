@@ -66,4 +66,9 @@ public class StudentController {
     }
 
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> search(@PathVariable Long id) {
+        return studentService.findStudentById(id);
+    }
+
 }

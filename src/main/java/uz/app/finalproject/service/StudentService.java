@@ -13,8 +13,7 @@ import uz.app.finalproject.repository.GroupRepository;
 import uz.app.finalproject.repository.StudentRepository;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -60,14 +59,32 @@ public class StudentService {
 
     public ResponseEntity<?> getStudents() {
         try {
+
             List<Student> students = studentRepository.findAllByStatus(Status.ACTIVE);
 
             if (students.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseMessage("No active students found", students, true));
+                        .body(new ResponseMessage("No active students found", null, true));
             }
 
-            return ResponseEntity.ok(new ResponseMessage("All students", students, true));
+            List<Map<String, Object>> studentDataList = new ArrayList<>();
+
+            for (Student student : students) {
+                Groups group = groupRepository.findByStudentsId(student.getId());
+
+                Map<String, Object> studentData = new HashMap<>();
+                studentData.put("student", student);
+                if (group != null) {
+                    studentData.put("groupName", group.getGroupName());
+                    studentData.put("courseName", group.getCourseName());
+                } else {
+                    studentData.put("groupName", null);
+                    studentData.put("courseName", null);
+                }
+                studentDataList.add(studentData);
+            }
+
+            return ResponseEntity.ok(new ResponseMessage("All students with group info", studentDataList, true));
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -248,5 +265,27 @@ public class StudentService {
 
     }
 
+    public ResponseEntity<?> findStudentById(Long id) {
+
+        Optional<Student> byId = studentRepository.findById(id);
+        if (byId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Student not found", null, false));
+        }
+
+        Student student = byId.get();
+
+        Groups group = groupRepository.findByStudentsId(id);
+
+        if (group != null) {
+            group.setStudents(null);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("student", student);
+        response.put("group", group);
+
+        return ResponseEntity.ok(new ResponseMessage("Success", response, true));
+    }
 }
 

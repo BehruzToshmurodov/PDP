@@ -28,7 +28,7 @@ public class RoomController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteRoom(@PathVariable String id) {
+    public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
         return roomService.deleteRoom(id);
     }
 
@@ -42,9 +42,9 @@ public class RoomController {
         return roomService.createRoom(roomDTO);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<?> search(@RequestParam String search) {
-        return roomService.search(search);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> search(@PathVariable Long id) {
+        return roomService.search(id);
     }
 
 }

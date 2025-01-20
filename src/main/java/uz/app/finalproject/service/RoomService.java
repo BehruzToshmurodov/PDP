@@ -23,13 +23,12 @@ import java.util.Optional;
 
 public class RoomService {
 
-    final RoomRepository repository;
     final GroupRepository groupRepository;
-
+    final RoomRepository roomRepository;
 
 
     public ResponseEntity<?> getRooms() {
-        List<Room> rooms = repository.findAll();
+        List<Room> rooms = roomRepository.findAll();
 
         if (rooms.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
@@ -41,16 +40,15 @@ public class RoomService {
     }
 
 
-    public ResponseEntity<?> deleteRoom(String id) {
+    public ResponseEntity<?> deleteRoom(Long id) {
         try {
-            Long roomId = Long.valueOf(id);
 
-            if (!repository.existsById(roomId)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            if (!roomRepository.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseMessage("Room not found", null, false));
             }
 
-            Optional<Room> roomOptional = repository.findById(roomId);
+            Optional<Room> roomOptional = roomRepository.findById(id);
             if (roomOptional.isPresent()) {
                 Room room = roomOptional.get();
 
@@ -62,16 +60,16 @@ public class RoomService {
                     }
                 }
 
-                repository.deleteById(roomId);
+                roomRepository.delete(room);
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseMessage("Room deleted successfully", null, true));
             }
 
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Room not found", null, false));
 
         } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Invalid room ID format", null, false));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -85,7 +83,7 @@ public class RoomService {
         try {
             Long roomId = Long.valueOf(id);
 
-            Optional<Room> roomOptional = repository.findById(roomId);
+            Optional<Room> roomOptional = roomRepository.findById(roomId);
             if (roomOptional.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ResponseMessage("Room not found", null, false));
@@ -97,7 +95,7 @@ public class RoomService {
             room.setCountOfTable(roomDTO.getCountOfTable());
             room.setCountOfChair(roomDTO.getCountOfChair());
 
-            repository.save(room);
+            roomRepository.save(room);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Room updated successfully", roomDTO, true));
@@ -123,7 +121,7 @@ public class RoomService {
             room.setCountOfTable(roomDTO.getCountOfTable());
             room.setCountOfChair(roomDTO.getCountOfChair());
 
-            repository.save(room);
+            roomRepository.save(room);
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ResponseMessage("Room created successfully", roomDTO, true));
@@ -134,22 +132,16 @@ public class RoomService {
     }
 
 
-    public ResponseEntity<?> search(String search) {
-
-        if (search == null || search.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(new ResponseMessage("Search query cannot be empty", null, false));
-        }
+    public ResponseEntity<?> search(Long id ) {
 
         try {
-            List<Room> allByRoomNameContains = repository.findAllByRoomNameContains(search);
 
-            if (allByRoomNameContains.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseMessage("No rooms found for the given search query", null, false));
-            }
+            Optional<Room> byId = roomRepository.findById(id);
 
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseMessage("Search results", allByRoomNameContains, true));
+            return byId.map(room -> ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Founded room by id", room, true))).orElseGet(() -> ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("No rooms found for the given id ", null, false)));
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseMessage("Error during search: " + e.getMessage(), null, false));
