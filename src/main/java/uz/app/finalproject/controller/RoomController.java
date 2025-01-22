@@ -33,7 +33,7 @@ public class RoomController {
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<?> updateRoom(@PathVariable String id, RoomDTO roomDTO) {
+    public ResponseEntity<?> updateRoom(@PathVariable Long id, RoomDTO roomDTO) {
         return roomService.updateRoom(id, roomDTO);
     }
 

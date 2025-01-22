@@ -79,13 +79,12 @@ public class RoomService {
 
 
 
-    public ResponseEntity<?> updateRoom(String id, RoomDTO roomDTO) {
+    public ResponseEntity<?> updateRoom(Long id, RoomDTO roomDTO) {
         try {
-            Long roomId = Long.valueOf(id);
 
-            Optional<Room> roomOptional = roomRepository.findById(roomId);
+            Optional<Room> roomOptional = roomRepository.findById(id);
             if (roomOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseMessage("Room not found", null, false));
             }
 
@@ -94,7 +93,7 @@ public class RoomService {
             room.setCapacity(roomDTO.getCapacity());
             room.setCountOfTable(roomDTO.getCountOfTable());
             room.setCountOfChair(roomDTO.getCountOfChair());
-
+            
             roomRepository.save(room);
 
             return ResponseEntity.status(HttpStatus.OK)
