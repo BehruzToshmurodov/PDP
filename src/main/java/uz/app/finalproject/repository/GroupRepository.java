@@ -8,6 +8,7 @@ import uz.app.finalproject.entity.Student;
 import uz.app.finalproject.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface GroupRepository extends JpaRepository<Groups, Long> {
@@ -29,4 +30,6 @@ public interface GroupRepository extends JpaRepository<Groups, Long> {
     Integer countByStatus(Status status);
 
     List<Groups> findByTeacherId(Long teacherId);
+
+    Optional<Groups> findByIdAndStatus(Long groupId, Status status);
 }

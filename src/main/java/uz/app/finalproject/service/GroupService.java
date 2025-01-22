@@ -26,7 +26,7 @@ public class GroupService {
     final StudentRepository studentRepository;
     final GroupAttendanceRepository groupAttendanceRepository;
 
-    
+
 
     public ResponseEntity<?> addGroup(GroupDTO groupDTO) {
 
@@ -411,7 +411,7 @@ public class GroupService {
 
     public ResponseEntity<?> getById(Long groupId) {
 
-        Optional<Groups> byId = groupRepository.findById(groupId);
+        Optional<Groups> byId = groupRepository.findByIdAndStatus(groupId ,Status.ACTIVE);
 
         return byId.map(groups -> ResponseEntity.ok(new ResponseMessage("Founded group by given id", groups, true))).orElseGet(() -> ResponseEntity.ok(new ResponseMessage("Group not found by given id", null, true)));
 
