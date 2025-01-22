@@ -94,4 +94,9 @@ public class GroupController {
     }
 
 
+    @GetMapping("/{groupId}")
+    public ResponseEntity<?> getGroupById(@PathVariable Long groupId){
+       return groupService.getById(groupId);
+    }
+
 }

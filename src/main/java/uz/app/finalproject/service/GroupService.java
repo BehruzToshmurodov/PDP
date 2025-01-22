@@ -26,32 +26,7 @@ public class GroupService {
     final StudentRepository studentRepository;
     final GroupAttendanceRepository groupAttendanceRepository;
 
-
-//    public ResponseEntity<?> groupsActive() {
-//
-//        List<Groups> activeGroups = groupRepository.findAllByStatus(Status.ACTIVE);
-//
-//        if (activeGroups != null && !activeGroups.isEmpty()) {
-//            return ResponseEntity.ok(new ResponseMessage("All active groups", activeGroups, true));
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                .body(new ResponseMessage("No active groups found", null, false));
-//    }
-//
-//
-//    public ResponseEntity<?> groupsArxiv() {
-//
-//        List<Groups> arxivGroups = groupRepository.findAllByStatus(Status.ARCHIVE);
-//
-//        if (arxivGroups != null && !arxivGroups.isEmpty()) {
-//            return ResponseEntity.ok(new ResponseMessage("Archived groups", arxivGroups, true));
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                .body(new ResponseMessage("No archived groups found", null, false));
-//    }
-
+    
 
     public ResponseEntity<?> addGroup(GroupDTO groupDTO) {
 
@@ -434,4 +409,11 @@ public class GroupService {
         }
     }
 
+    public ResponseEntity<?> getById(Long groupId) {
+
+        Optional<Groups> byId = groupRepository.findById(groupId);
+
+        return byId.map(groups -> ResponseEntity.ok(new ResponseMessage("Founded group by given id", groups, true))).orElseGet(() -> ResponseEntity.ok(new ResponseMessage("Group not found by given id", null, true)));
+
+    }
 }
