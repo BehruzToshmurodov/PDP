@@ -27,7 +27,7 @@ public class GroupController {
 //    }
 
 
-    @GetMapping("get_group_by_status/{status}")
+    @GetMapping("/{status}")
     public ResponseEntity<?> getGroupByStatus(@PathVariable String status) {
         return groupService.getGroups(status);
     }
