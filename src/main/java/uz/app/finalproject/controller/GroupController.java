@@ -27,7 +27,7 @@ public class GroupController {
 //    }
 
 
-    @GetMapping("/{status}")
+    @GetMapping("get_group_by_status/{status}")
     public ResponseEntity<?> getGroupByStatus(@PathVariable String status) {
         return groupService.getGroups(status);
     }
@@ -94,7 +94,7 @@ public class GroupController {
     }
 
 
-    @GetMapping("/{groupId}")
+    @GetMapping("get_group_by_id/{groupId}")
     public ResponseEntity<?> getGroupById(@PathVariable Long groupId){
        return groupService.getById(groupId);
     }
