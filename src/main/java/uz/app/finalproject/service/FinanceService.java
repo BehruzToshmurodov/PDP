@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uz.app.finalproject.dto.CourseFeeDTO;
 import uz.app.finalproject.dto.FinanceDTO;
+import uz.app.finalproject.entity.Enums.Status;
 import uz.app.finalproject.entity.Finance;
 import uz.app.finalproject.entity.Groups;
 import uz.app.finalproject.entity.ResponseMessage;
@@ -113,7 +114,7 @@ public class FinanceService {
 
         List<CourseFeeDTO> courseFee = new ArrayList<>();
 
-        for (Groups groups : groupRepository.findAll()) {
+        for (Groups groups : groupRepository.findAllByStatus(Status.ACTIVE)) {
             courseFee.add(new CourseFeeDTO(groups.getCourseName() , groups.getGroupPrice()));
         }
 
