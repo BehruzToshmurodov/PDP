@@ -31,18 +31,18 @@ public class GroupService {
     public ResponseEntity<?> addGroup(GroupDTO groupDTO) {
 
         if (groupDTO == null || groupDTO.getCourseName() == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Invalid group data provided", null, false));
         }
 
         if (groupRepository.existsByGroupNameAndStatusNot(groupDTO.getGroupName(), Status.ARCHIVE)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Group with this name already exists", null, false));
         }
 
         Optional<User> teacherOptional = userRepository.findById(Long.valueOf(groupDTO.getTeacherId()));
         if (teacherOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Teacher not found", null, false));
         }
 
@@ -55,7 +55,7 @@ public class GroupService {
 
         Optional<Room> room = roomRepository.findById(Long.valueOf(groupDTO.getRoomId()));
         if (room.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Room not found", null, false));
         }
 
