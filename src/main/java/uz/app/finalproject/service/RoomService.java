@@ -93,7 +93,7 @@ public class RoomService {
             room.setCapacity(roomDTO.getCapacity());
             room.setCountOfTable(roomDTO.getCountOfTable());
             room.setCountOfChair(roomDTO.getCountOfChair());
-            
+
             roomRepository.save(room);
 
             return ResponseEntity.status(HttpStatus.OK)

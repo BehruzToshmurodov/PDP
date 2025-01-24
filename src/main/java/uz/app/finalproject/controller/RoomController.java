@@ -32,8 +32,8 @@ public class RoomController {
         return roomService.deleteRoom(id);
     }
 
-    @PatchMapping("{id}")
-    public ResponseEntity<?> updateRoom(@PathVariable Long id, RoomDTO roomDTO) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateRoom(@PathVariable Long id, @RequestBody RoomDTO roomDTO) {
         return roomService.updateRoom(id, roomDTO);
     }
 
