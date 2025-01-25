@@ -27,7 +27,6 @@ public class GroupService {
     final GroupAttendanceRepository groupAttendanceRepository;
 
 
-
     public ResponseEntity<?> addGroup(GroupDTO groupDTO) {
 
         if (groupDTO == null || groupDTO.getCourseName() == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
@@ -335,7 +334,7 @@ public class GroupService {
 
             LocalDate today = LocalDate.now();
 
-            Optional<GroupAttendance> groupAttendances = groupAttendanceRepository.findByGroupsAndDate(groups , today);
+            Optional<GroupAttendance> groupAttendances = groupAttendanceRepository.findByGroupsAndDate(groups, today);
 
             if (groupAttendances.isPresent()) {
 
@@ -381,9 +380,9 @@ public class GroupService {
 
             for (Groups group : groupsList) {
                 Map<String, Object> groupData = new HashMap<>();
-                groupData.put("teacher_fullName" , group.getTeacher().getFirstname() + " " + group.getTeacher().getLastname());
+                groupData.put("teacher_fullName", group.getTeacher().getFirstname() + " " + group.getTeacher().getLastname());
                 groupData.put("groupId", group.getId());
-                groupData.put("group_price" , group.getGroupPrice());
+                groupData.put("group_price", group.getGroupPrice());
                 groupData.put("groupStatus", group.getStatus());
                 groupData.put("groupName", group.getGroupName());
                 groupData.put("courseName", group.getCourseName());
@@ -411,9 +410,38 @@ public class GroupService {
 
     public ResponseEntity<?> getById(Long groupId) {
 
-        Optional<Groups> byId = groupRepository.findByIdAndStatus(groupId ,Status.ACTIVE);
+        Optional<Groups> byId = groupRepository.findByIdAndStatus(groupId, Status.ACTIVE);
 
         return byId.map(groups -> ResponseEntity.ok(new ResponseMessage("Founded group by given id", groups, true))).orElseGet(() -> ResponseEntity.ok(new ResponseMessage("Group not found by given id", null, true)));
+
+    }
+
+    public ResponseEntity<?> removeStudentFromGroup(Long studentId, Long groupId) {
+
+        Optional<Groups> byId = groupRepository.findById(groupId);
+        if (byId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Group not found", null, false));
+        }
+
+        Groups groups = byId.get();
+
+        Optional<Student> studentOptional = studentRepository.findById(studentId);
+        if (studentOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Student not found", null, false));
+        }
+
+        Student student = studentOptional.get();
+
+        groups.getStudents().remove(student);
+
+        groupRepository.save(groups);
+        student.setStatus(Status.ACTIVELY_LEFT);
+
+        studentRepository.save(student);
+
+        return ResponseEntity.ok(new ResponseMessage("Student removed from group successfully", student, true));
 
     }
 }

@@ -99,4 +99,9 @@ public class GroupController {
        return groupService.getById(groupId);
     }
 
+    @PostMapping("/remove/{studentId}/{groupId}")
+    public ResponseEntity<?> removeStudent(@PathVariable Long studentId, @PathVariable Long groupId){
+        return groupService.removeStudentFromGroup(studentId, groupId);
+    }
+
 }
