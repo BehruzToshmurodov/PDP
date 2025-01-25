@@ -64,7 +64,7 @@ public class StudentService {
 
             if (students.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseMessage("No active students found", null, true));
+                        .body(new ResponseMessage("No active students found", List.of(), true));
             }
 
             List<Map<String, Object>> studentDataList = new ArrayList<>();
@@ -87,7 +87,7 @@ public class StudentService {
             return ResponseEntity.ok(new ResponseMessage("All students with group info", studentDataList, true));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Error retrieving students: " + e.getMessage(), null, false));
         }
     }
@@ -105,7 +105,7 @@ public class StudentService {
             return ResponseEntity.ok(new ResponseMessage("All archived users", arxiv, true));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Error retrieving archived users: " + e.getMessage(), null, false));
         }
     }
@@ -141,11 +141,11 @@ public class StudentService {
                         .body(new ResponseMessage("Student updated successfully", studentDTO, true));
             }
 
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Student not found", null, false));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Error updating student: " + e.getMessage(), null, false));
         }
     }
@@ -258,7 +258,7 @@ public class StudentService {
 
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Error processing attendance: " + e.getMessage(), null, false));
         }
 
