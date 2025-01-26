@@ -214,9 +214,10 @@ public class StudentService {
     }
 
 
-    public ResponseEntity<?> attendance(Long id) {
+    public ResponseEntity<?> attendance(Long studentId, Long groupId) {
         try {
-            Optional<Student> byId = studentRepository.findById(id);
+            Optional<Student> byId = studentRepository.findById(studentId);
+
             if (byId.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(new ResponseMessage("Student not found", null, false));
@@ -224,9 +225,17 @@ public class StudentService {
 
             Student student = byId.get();
 
+            LocalDate today = LocalDate.now();
+
+            Optional<Groups> byIdAndStatus = groupRepository.findByIdAndStatus(groupId, Status.ACTIVE);
+
+            if (byIdAndStatus.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseMessage("Group not found or not active", null, false));
+            }
+
 
             if (student.getAddedGroup()) {
-                LocalDate today = LocalDate.now();
 
                 Optional<Attendance> existingAttendance = attendanceRepository
                         .findByStudentAndAttendanceDate(student, today);
@@ -246,6 +255,7 @@ public class StudentService {
                 Attendance newAttendance = new Attendance();
                 newAttendance.setStudent(student);
                 newAttendance.setAttendanceDate(today);
+                newAttendance.setGroup(byIdAndStatus.get());
                 newAttendance.setAttended(true);
                 attendanceRepository.save(newAttendance);
 

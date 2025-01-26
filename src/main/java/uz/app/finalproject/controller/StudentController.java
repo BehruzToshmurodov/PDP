@@ -13,6 +13,7 @@ import uz.app.finalproject.repository.GroupRepository;
 import uz.app.finalproject.repository.UserRepository;
 import uz.app.finalproject.service.StudentService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,9 +61,9 @@ public class StudentController {
     }
 
 
-    @PostMapping("/attendance/{id}")
-    public ResponseEntity<?> attendance(@PathVariable Long id) {
-        return studentService.attendance(id);
+    @PostMapping("/attendance/{studentId}/{groupId}")
+    public ResponseEntity<?> attendance(@PathVariable Long studentId , @PathVariable Long groupId) {
+        return studentService.attendance(studentId , groupId);
     }
 
 
