@@ -22,10 +22,6 @@ public class Attendance {
     @ManyToOne
     private Student student;
 
-    @ManyToOne
-    private Groups group;
-
-    @CreationTimestamp
     private LocalDate attendanceDate;
 
     private boolean attended;

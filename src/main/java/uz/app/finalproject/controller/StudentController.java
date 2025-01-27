@@ -61,9 +61,9 @@ public class StudentController {
     }
 
 
-    @PostMapping("/attendance/{studentId}/{groupId}")
-    public ResponseEntity<?> attendance(@PathVariable Long studentId , @PathVariable Long groupId) {
-        return studentService.attendance(studentId , groupId);
+    @PostMapping("/attendance/{studentId}}")
+    public ResponseEntity<?> attendance(@PathVariable Long studentId) {
+        return studentService.attendance(studentId);
     }
 
 
