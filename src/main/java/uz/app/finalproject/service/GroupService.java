@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import uz.app.finalproject.dto.GroupDTO;
 import uz.app.finalproject.entity.*;
+import uz.app.finalproject.entity.Enums.Role;
 import uz.app.finalproject.entity.Enums.Status;
 import uz.app.finalproject.repository.*;
 
@@ -102,50 +103,52 @@ public class GroupService {
     }
 
 
-    public ResponseEntity<?> updateGroup(GroupDTO groupDTO, String id) {
+    public ResponseEntity<?> updateGroup(GroupDTO groupDTO, Long id) {
 
-        System.out.println("update starting !");
         if (id == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Invalid group ID", null, false));
         }
 
         if (groupDTO == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Invalid group data provided", null, false));
         }
 
-        Optional<Groups> groupOptional = groupRepository.findById(Long.valueOf(id));
+        Optional<Groups> groupOptional = groupRepository.findById(id);
+
         if (groupOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Group not found", null, false));
         }
 
         Groups group = groupOptional.get();
 
-        Optional<User> teacher = userRepository.findById(Long.valueOf(groupDTO.getTeacherId()));
+        Optional<User> teacher = userRepository.findByIdAndRole(groupDTO.getTeacherId() , Role.TEACHER);
+
         if (teacher.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Teacher not found", null, false));
         }
 
-        Optional<Room> room = roomRepository.findById(Long.valueOf(groupDTO.getRoomId()));
+        Optional<Room> room = roomRepository.findById(groupDTO.getRoomId());
+
         if (room.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Room not found", null, false));
         }
 
         group.setGroupName(groupDTO.getGroupName());
-        System.out.println("phone number changed");
+
         group.setDays(groupDTO.getDays());
-        System.out.println("days changed");
-        group.setStatus(Status.ACTIVE);
+        group.setStartDate(groupDTO.getStartDate());
+        group.setEndDate(groupDTO.getEndDate());
+        group.setCourseName(groupDTO.getCourseName());
+        group.setGroupPrice(groupDTO.getGroupPrice());
         group.setStartTime(groupDTO.getStartTime());
-        System.out.println("start time changed");
+        group.setGroupName(groupDTO.getGroupName());
         group.setTeacher(teacher.get());
-        System.out.println("teacher changed");
         group.setRoom(room.get());
-        System.out.println("room changed");
 
         groupRepository.save(group);
 

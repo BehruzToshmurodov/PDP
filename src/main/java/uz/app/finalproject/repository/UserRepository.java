@@ -7,26 +7,17 @@ import uz.app.finalproject.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findUserByFirstnameAndLastname(String firstname, String lastName);
-
     List<User> findAllByRoleAndStatusNot(Role role, Status status);
-
-    List<User> findAllByRoleNotInAndStatus(List<Role> roles, Status status);
-
-    List<User> findAllByFirstnameContainingOrLastnameContainingAndStatusAndRole(String firstname, String lastname, Status status, Role role);
-
-    List<User> findAllByRoleInAndStatus(List<Role> cleaner, Status arxiv);
-
-    List<User> findAllByRoleAndStatus(Role student, Status archive);
-
-    List<User> findAllByRoleNotAndStatusNot(Role role, Status status);
 
     List<User> findAllByStatus(Status status);
 
     List<User> findAllByStatusAndRoleNotIn( Status status , List<Role> teacher);
 
     Integer countByStatus( Status status);
+
+    Optional<User> findByIdAndRole(Long id , Role role);
 }

@@ -15,8 +15,8 @@ public class GroupDTO {
 
     private String groupName;
     private String courseName;
-    private String teacherId;
-    private String roomId;
+    private Long teacherId;
+    private Long roomId;
     private List<Days> days;
     private String startTime;
     private LocalDate startDate;

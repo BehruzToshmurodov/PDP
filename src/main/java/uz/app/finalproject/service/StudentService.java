@@ -163,6 +163,7 @@ public class StudentService {
 
                 if (byStudentsId != null) {
                     byStudentsId.getStudents().remove(student);
+                    byStudentsId.setStNumber(byStudentsId.getStNumber()-1);
                     groupRepository.save(byStudentsId);
                 }
 
