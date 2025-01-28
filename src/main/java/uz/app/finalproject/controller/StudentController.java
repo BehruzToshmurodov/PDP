@@ -1,6 +1,7 @@
 package uz.app.finalproject.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.app.finalproject.dto.StudentDTO;
@@ -61,9 +62,9 @@ public class StudentController {
     }
 
 
-    @PostMapping("/attendance/{studentId}")
-    public ResponseEntity<?> attendance(@PathVariable Long studentId) {
-        return studentService.attendance(studentId);
+    @PostMapping("/attendance/{groupId}")
+    public ResponseEntity<?> attendance(@RequestBody List<Long> studentIds , @PathVariable Long groupId) {
+        return studentService.attendance(studentIds , groupId);
     }
 
 

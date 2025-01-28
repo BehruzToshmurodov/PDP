@@ -70,6 +70,7 @@ public class StudentService {
             List<Map<String, Object>> studentDataList = new ArrayList<>();
 
             for (Student student : students) {
+
                 Groups group = groupRepository.findByStudentsId(student.getId());
 
                 Map<String, Object> studentData = new HashMap<>();
@@ -163,7 +164,7 @@ public class StudentService {
 
                 if (byStudentsId != null) {
                     byStudentsId.getStudents().remove(student);
-                    byStudentsId.setStNumber(byStudentsId.getStNumber()-1);
+                    byStudentsId.setStNumber(byStudentsId.getStNumber() - 1);
                     groupRepository.save(byStudentsId);
                 }
 
@@ -215,56 +216,46 @@ public class StudentService {
     }
 
 
-    public ResponseEntity<?> attendance(Long studentId) {
-        try {
-            Optional<Student> byId = studentRepository.findById(studentId);
+    public ResponseEntity<?> attendance(List<Long> studentIds, Long groupId) {
 
-            if (byId.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseMessage("Student not found", null, false));
-            }
 
-            Student student = byId.get();
+        Optional<Groups> optionalGroups = groupRepository.findById(groupId);
 
-            LocalDate today = LocalDate.now();
+        List<Student> attendedStudents = studentRepository.findAllByIdIn(studentIds);
 
-            if (student.getAddedGroup()) {
+        if (optionalGroups.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Group not found", null, false));
+        }
 
-                Optional<Attendance> existingAttendance = attendanceRepository
-                        .findByStudentAndAttendanceDate(student, today);
+        Groups groups = optionalGroups.get();
+        List<Student> groupStudents = groups.getStudents();
 
-                if (existingAttendance.isPresent()) {
-                    Attendance attendance = existingAttendance.get();
-                    attendance.setAttended(!attendance.isAttended());
+        for (Student attendedStudent : attendedStudents) {
+            Optional<Attendance> byStudentAndAttendanceDate = attendanceRepository.findByStudentAndAttendanceDate(attendedStudent, LocalDate.now());
+
+            if (byStudentAndAttendanceDate.isPresent()) {
+                Attendance attendance = byStudentAndAttendanceDate.get();
+                attendance.setAttended(!attendance.isAttended());
+                attendanceRepository.save(attendance);
+            } else {
+                for (Student groupStudent : groupStudents) {
+
+                    Attendance attendance = new Attendance();
+                    attendance.setStudent(groupStudent);
+                    attendance.setAttendanceDate(LocalDate.now());
+                    attendance.setAttended(attendedStudents.contains(groupStudent));
                     attendanceRepository.save(attendance);
 
-                    String message = attendance.isAttended()
-                            ? "Student marked as attended"
-                            : "Student marked as not attended";
-                    return ResponseEntity.status(HttpStatus.OK)
-                            .body(new ResponseMessage(message, null, true));
                 }
-
-                Attendance newAttendance = new Attendance();
-                newAttendance.setStudent(student);
-                newAttendance.setAttendanceDate(today);
-                newAttendance.setAttended(true);
-                attendanceRepository.save(newAttendance);
-
-                return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(new ResponseMessage("Student attendance recorded as attended", null, true));
             }
 
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseMessage("This student can not attended because do not added group !", null, false));
-
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseMessage("Error processing attendance: " + e.getMessage(), null, false));
         }
 
 
+        return ResponseEntity.ok(new
+
+                ResponseMessage("Students attendance save successfully", null, true));
     }
 
     public ResponseEntity<?> findStudentById(Long id) {

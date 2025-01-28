@@ -124,7 +124,7 @@ public class GroupService {
 
         Groups group = groupOptional.get();
 
-        Optional<User> teacher = userRepository.findByIdAndRole(groupDTO.getTeacherId() , Role.TEACHER);
+        Optional<User> teacher = userRepository.findByIdAndRole(groupDTO.getTeacherId(), Role.TEACHER);
 
         if (teacher.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
@@ -274,13 +274,19 @@ public class GroupService {
 
         Groups group = groupsOptional.get();
 
-        student.setAddedGroup(true);
-        group.setStNumber(group.getStNumber() + 1);
-        group.getStudents().add(student);
+        if (!group.getStudents().contains(student)) {
 
-        studentRepository.save(student);
-        groupRepository.save(group);
 
+            student.setAddedGroup(true);
+            group.setStNumber(group.getStNumber() + 1);
+            group.getStudents().add(student);
+
+            studentRepository.save(student);
+            groupRepository.save(group);
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ResponseMessage("Student already added to the group", student, false));
+        }
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseMessage("Student added to group successfully", student, true));
@@ -413,11 +419,32 @@ public class GroupService {
 
     public ResponseEntity<?> getById(Long groupId) {
 
-        Optional<Groups> byId = groupRepository.findByIdAndStatus(groupId, Status.ACTIVE);
+        Optional<Groups> optionalGroups = groupRepository.findById(groupId);
 
-        return byId.map(groups -> ResponseEntity.ok(new ResponseMessage("Founded group by given id", groups, true))).orElseGet(() -> ResponseEntity.ok(new ResponseMessage("Group not found by given id", null, true)));
+        if (optionalGroups.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Group not found", null, false));
+        }
 
+        Groups group = optionalGroups.get();
+        List<Student> students = group.getStudents();
+
+        List<Attendance> attendancesByStudents = attendanceRepository.findAllByStudentIn(students);
+
+        Map<Student, List<Attendance>> studentAttendanceMap = new HashMap<>();
+
+        for (Attendance attendance : attendancesByStudents) {
+            Student student = attendance.getStudent();
+            studentAttendanceMap
+                    .computeIfAbsent(student, k -> new ArrayList<>())
+                    .add(attendance);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseMessage("Attendances and group info", List.of(studentAttendanceMap , group), true));
     }
+
+
 
     public ResponseEntity<?> removeStudentFromGroup(Long studentId, Long groupId) {
 

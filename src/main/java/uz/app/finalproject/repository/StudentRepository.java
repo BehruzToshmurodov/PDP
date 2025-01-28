@@ -8,6 +8,7 @@ import uz.app.finalproject.entity.Student;
 import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student , Long> {
+
     List<Student> findAllByStatus(Status status);
 
     List<Student> findAllByFirstnameContainingAndStatusNotOrLastnameContainingAndStatusNot(String firstname , Status status , String lastname , Status status1);
@@ -15,4 +16,7 @@ public interface StudentRepository extends JpaRepository<Student , Long> {
     List<Student> findAllByAddedGroupAndStatus(Boolean added, Status status);
 
     Integer countByStatusNotIn(List<Status> status);
+
+    List<Student> findAllByIdIn( List<Long> ids );
+
 }
