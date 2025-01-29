@@ -64,38 +64,25 @@ public class GroupService {
         }
 
         Room room = roomOptional.get();
-
         List<Groups> allByRoom = groupRepository.findAllByRoom(room);
 
         if (!allByRoom.isEmpty()) {
-
-            boolean isEquals = false;
-
             for (Groups groups : allByRoom) {
 
                 LocalTime time = LocalTime.parse(groups.getStartTime(), DateTimeFormatter.ofPattern("H:mm"));
                 LocalTime groupDtoTime = LocalTime.parse(groupDTO.getStartTime(), DateTimeFormatter.ofPattern("H:mm"));
+                LocalTime endTime = time.plusHours(3);
 
-                if (!time.isBefore(groupDtoTime) && time.plusHours(3).isAfter(groupDtoTime)) {
-
-                    for (Days day : groups.getDays()) {
-                        for (Days groupDTODay : groupDTO.getDays()) {
-                            if (day.equals(groupDTODay)) {
-                                isEquals = true;
-                            } else {
-                                isEquals = false;
-                            }
-                        }
-                    }
+                if (!(groupDtoTime.isBefore(time) || groupDtoTime.isAfter(endTime))) {
+                    boolean isEquals = groups.getDays().stream()
+                            .anyMatch(groupDTO.getDays()::contains);
 
                     if (isEquals) {
-                        return ResponseEntity.status(HttpStatus.OK)
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
                                 .body(new ResponseMessage("A group with the same teacher and time already exists", null, false));
                     }
                 }
-
             }
-
         }
 
         saveGroup(groupDTO, teacher, room);
