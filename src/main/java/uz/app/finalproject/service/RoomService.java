@@ -52,7 +52,7 @@ public class RoomService {
             if (roomOptional.isPresent()) {
                 Room room = roomOptional.get();
 
-                List<Groups> groupsUsingRoom = groupRepository.findByRoom(room);
+                List<Groups> groupsUsingRoom = groupRepository.findAllByRoom(room);
                 if (!groupsUsingRoom.isEmpty()) {
                     for (Groups group : groupsUsingRoom) {
                         group.setRoom(null);
@@ -76,7 +76,6 @@ public class RoomService {
                     .body(new ResponseMessage("An error occurred while deleting the room", null, false));
         }
     }
-
 
 
     public ResponseEntity<?> updateRoom(Long id, RoomDTO roomDTO) {
@@ -109,21 +108,27 @@ public class RoomService {
 
 
     public ResponseEntity<?> createRoom(RoomDTO roomDTO) {
-        if (roomDTO == null || roomDTO.getRoomName() == null || roomDTO.getRoomName().isEmpty()) {
-            return ResponseEntity.badRequest().body(new ResponseMessage("Invalid room data", null, false));
-        }
 
         try {
-            Room room = new Room();
-            room.setRoomName(roomDTO.getRoomName());
-            room.setCapacity(roomDTO.getCapacity());
-            room.setCountOfTable(roomDTO.getCountOfTable());
-            room.setCountOfChair(roomDTO.getCountOfChair());
 
-            roomRepository.save(room);
+            if (!roomRepository.existsByRoomName(roomDTO.getRoomName())) {
 
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ResponseMessage("Room created successfully", roomDTO, true));
+                Room room = new Room();
+                room.setRoomName(roomDTO.getRoomName());
+                room.setCapacity(roomDTO.getCapacity());
+                room.setCountOfTable(roomDTO.getCountOfTable());
+                room.setCountOfChair(roomDTO.getCountOfChair());
+
+                roomRepository.save(room);
+
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(new ResponseMessage("Room created successfully", roomDTO, true));
+
+            } else {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(new ResponseMessage("Room with the same name already exists", null, false));
+            }
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseMessage("Error creating room: " + e.getMessage(), null, false));
@@ -131,7 +136,7 @@ public class RoomService {
     }
 
 
-    public ResponseEntity<?> search(Long id ) {
+    public ResponseEntity<?> search(Long id) {
 
         try {
 
@@ -143,7 +148,7 @@ public class RoomService {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseMessage("Error during search: " + e.getMessage(), null, false));
+                    .body(new ResponseMessage("Error during find by id: " + e.getMessage(), null, false));
         }
     }
 

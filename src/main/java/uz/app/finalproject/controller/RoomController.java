@@ -43,7 +43,7 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> search(@PathVariable Long id) {
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         return roomService.search(id);
     }
 

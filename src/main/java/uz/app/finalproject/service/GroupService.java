@@ -8,11 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import uz.app.finalproject.dto.GroupDTO;
 import uz.app.finalproject.entity.*;
+import uz.app.finalproject.entity.Enums.Days;
 import uz.app.finalproject.entity.Enums.Role;
 import uz.app.finalproject.entity.Enums.Status;
 import uz.app.finalproject.repository.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,43 +34,76 @@ public class GroupService {
 
     public ResponseEntity<?> addGroup(GroupDTO groupDTO) {
 
-        if (groupDTO == null || groupDTO.getCourseName() == null || groupDTO.getGroupName() == null || groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null) {
-            return ResponseEntity.status(HttpStatus.OK)
+        if (groupDTO == null || groupDTO.getCourseName() == null || groupDTO.getGroupName() == null ||
+                groupDTO.getTeacherId() == null || groupDTO.getRoomId() == null || groupDTO.getStartTime() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage("Invalid group data provided", null, false));
         }
 
         if (groupRepository.existsByGroupNameAndStatusNot(groupDTO.getGroupName(), Status.ARCHIVE)) {
-            return ResponseEntity.status(HttpStatus.OK)
+            return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseMessage("Group with this name already exists", null, false));
         }
 
-        Optional<User> teacherOptional = userRepository.findById(Long.valueOf(groupDTO.getTeacherId()));
+        Optional<User> teacherOptional = userRepository.findById(groupDTO.getTeacherId());
         if (teacherOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseMessage("Teacher not found", null, false));
         }
 
         User teacher = teacherOptional.get();
-
-        if (!"TEACHER".equals(String.valueOf(teacher.getRole()))) {
+        if (!Role.TEACHER.equals(teacher.getRole())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new ResponseMessage("This teacher does not have the required role", null, false));
         }
 
-        Optional<Room> room = roomRepository.findById(Long.valueOf(groupDTO.getRoomId()));
-        if (room.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK)
+        Optional<Room> roomOptional = roomRepository.findById(groupDTO.getRoomId());
+        if (roomOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ResponseMessage("Room not found", null, false));
         }
 
-        Room room1 = room.get();
+        Room room = roomOptional.get();
 
-        saveGroup(groupDTO, teacher, room1);
+        List<Groups> allByRoom = groupRepository.findAllByRoom(room);
 
+        if (!allByRoom.isEmpty()) {
+
+            boolean isEquals = false;
+
+            for (Groups groups : allByRoom) {
+
+                LocalTime time = LocalTime.parse(groups.getStartTime(), DateTimeFormatter.ofPattern("H:mm"));
+                LocalTime groupDtoTime = LocalTime.parse(groupDTO.getStartTime(), DateTimeFormatter.ofPattern("H:mm"));
+
+                if (!time.isBefore(groupDtoTime) && time.plusHours(3).isAfter(groupDtoTime)) {
+
+                    for (Days day : groups.getDays()) {
+                        for (Days groupDTODay : groupDTO.getDays()) {
+                            if (day.equals(groupDTODay)) {
+                                isEquals = true;
+                            } else {
+                                isEquals = false;
+                            }
+                        }
+                    }
+
+                    if (isEquals) {
+                        return ResponseEntity.status(HttpStatus.OK)
+                                .body(new ResponseMessage("A group with the same teacher and time already exists", null, false));
+                    }
+                }
+
+            }
+
+        }
+
+        saveGroup(groupDTO, teacher, room);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseMessage("Group added successfully", groupDTO, true));
     }
+
 
     private void saveGroup(GroupDTO groupDTO, User teacher, Room room) {
         Groups groups = new Groups();
@@ -441,9 +478,8 @@ public class GroupService {
         }
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseMessage("Attendances and group info", List.of(studentAttendanceMap , group), true));
+                .body(new ResponseMessage("Attendances and group info", List.of(studentAttendanceMap, group), true));
     }
-
 
 
     public ResponseEntity<?> removeStudentFromGroup(Long studentId, Long groupId) {

@@ -22,6 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .build();
     }
 
+
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> null;

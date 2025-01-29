@@ -19,5 +19,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Integer countByStatus( Status status);
 
+    Optional<User> findByPhoneNumber(String phoneNumber);
+
     Optional<User> findByIdAndRole(Long id , Role role);
+
+
 }

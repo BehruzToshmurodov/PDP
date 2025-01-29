@@ -9,6 +9,7 @@ import uz.app.finalproject.entity.Enums.Days;
 import uz.app.finalproject.entity.Enums.Status;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity

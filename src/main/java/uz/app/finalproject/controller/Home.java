@@ -32,8 +32,7 @@ public class Home {
         dashboard.setActive_students(studentRepository.countByStatusNotIn(List.of(Status.ARCHIVE , Status.ACTIVELY_LEFT)));
         dashboard.setGroups(groupRepository.countByStatus(Status.ACTIVE));
         dashboard.setStaffs(staffRepository.countByStatus(Status.ACTIVE));
-        dashboard.setActively_left_students(studentRepository.countByStatusNotIn(List.of(Status.ARCHIVE , Status.ARCHIVE)));
-
+        dashboard.setActively_left_students(studentRepository.countByStatusNotIn(List.of(Status.ACTIVE , Status.ARCHIVE)));
 
         return ResponseEntity.ok(new ResponseMessage( "Dashboard info" , dashboard , true));
 
