@@ -13,9 +13,7 @@ import uz.app.finalproject.repository.FinanceRepository;
 import uz.app.finalproject.repository.GroupRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class FinanceService {
@@ -111,14 +109,39 @@ public class FinanceService {
     }
 
     public ResponseEntity<?> getCourseFee() {
-
-        List<CourseFeeDTO> courseFee = new ArrayList<>();
+        List<CourseFeeDTO> courseFeeList = new ArrayList<>();
+        double totalPrice = 0.0;
 
         for (Groups groups : groupRepository.findAllByStatus(Status.ACTIVE)) {
-            courseFee.add(new CourseFeeDTO(groups.getCourseName() , groups.getGroupPrice()));
+            courseFeeList.add(new CourseFeeDTO(groups.getCourseName(), groups.getGroupPrice(), groups.getStartDate()));
+            totalPrice += groups.getGroupPrice();
         }
 
-        return ResponseEntity.ok().body(new ResponseMessage("Course fees", courseFee, true));
+        Map<String, Object> data = new HashMap<>();
+        data.put("Course fees" , courseFeeList);
+        data.put("total price" , totalPrice);
 
+
+        return ResponseEntity.ok().body( new ResponseMessage("Course fee" , data , true) );
     }
+
+    public ResponseEntity<?> filterForCourseFee(LocalDate startDate, LocalDate endDate) {
+        List<CourseFeeDTO> courseFeeList = new ArrayList<>();
+        double totalPrice = 0.0;
+
+        for (Groups groups : groupRepository.findAllByStatus(Status.ACTIVE)) {
+            if (groups.getStartDate().isAfter(startDate) && groups.getStartDate().isBefore(endDate)) {
+                courseFeeList.add(new CourseFeeDTO(groups.getCourseName(), groups.getGroupPrice(), groups.getStartDate()));
+                totalPrice += groups.getGroupPrice();
+            }
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("Course fees" , courseFeeList);
+        data.put("total price" , totalPrice);
+
+
+        return ResponseEntity.ok().body( new ResponseMessage("Course fee" , data , true) );
+    }
+
 }

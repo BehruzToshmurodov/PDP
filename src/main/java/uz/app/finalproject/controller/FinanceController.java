@@ -49,4 +49,10 @@ public class FinanceController {
         return financeService.getCourseFee();
     }
 
+
+    @GetMapping("/courseFees/filter")
+    public ResponseEntity<?> filterForCourseFees(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+        return financeService.filterForCourseFee(startDate, endDate);
+    }
+
 }

@@ -300,13 +300,20 @@ public class GroupService {
 
         if (!group.getStudents().contains(student)) {
 
+            if ( group.getRoom().getCapacity() > group.getStNumber() ){
 
-            student.setAddedGroup(true);
-            group.setStNumber(group.getStNumber() + 1);
-            group.getStudents().add(student);
+                student.setAddedGroup(true);
+                group.setStNumber(group.getStNumber() + 1);
+                group.getStudents().add(student);
 
-            studentRepository.save(student);
-            groupRepository.save(group);
+                studentRepository.save(student);
+                groupRepository.save(group);
+            } else {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                       .body(new ResponseMessage("Room capacity reached. Student can't be added to the group.", student, false));
+            }
+
+
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseMessage("Student already added to the group", student, false));
