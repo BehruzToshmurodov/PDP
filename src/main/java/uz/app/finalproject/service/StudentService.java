@@ -14,6 +14,7 @@ import uz.app.finalproject.repository.StudentRepository;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -215,13 +216,9 @@ public class StudentService {
         }
     }
 
-
     public ResponseEntity<?> attendance(List<Long> studentIds, Long groupId) {
 
-
         Optional<Groups> optionalGroups = groupRepository.findById(groupId);
-
-        List<Student> attendedStudents = studentRepository.findAllByIdIn(studentIds);
 
         if (optionalGroups.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
@@ -231,31 +228,34 @@ public class StudentService {
         Groups groups = optionalGroups.get();
         List<Student> groupStudents = groups.getStudents();
 
-        for (Student attendedStudent : attendedStudents) {
-            Optional<Attendance> byStudentAndAttendanceDate = attendanceRepository.findByStudentAndAttendanceDate(attendedStudent, LocalDate.now());
-
-            if (byStudentAndAttendanceDate.isPresent()) {
-                Attendance attendance = byStudentAndAttendanceDate.get();
-                attendance.setAttended(!attendance.isAttended());
-                attendanceRepository.save(attendance);
-            } else {
-                for (Student groupStudent : groupStudents) {
-
-                    Attendance attendance = new Attendance();
-                    attendance.setStudent(groupStudent);
-                    attendance.setAttendanceDate(LocalDate.now());
-                    attendance.setAttended(attendedStudents.contains(groupStudent));
-                    attendanceRepository.save(attendance);
-
-                }
-            }
-
+        if (groupStudents.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("No students in this group", null, false));
         }
 
+        Set<Long> attendedStudentIds = new HashSet<>(studentIds);
 
-        return ResponseEntity.ok(new
+        for (Student groupStudent : groupStudents) {
+            Optional<Attendance> existingAttendance = attendanceRepository.findByStudentAndAttendanceDate(groupStudent, LocalDate.now());
 
-                ResponseMessage("Students attendance save successfully", null, true));
+            Attendance attendance;
+            if (existingAttendance.isPresent()) {
+                attendance = existingAttendance.get();
+                if (attendedStudentIds.contains(groupStudent.getId())) {
+                    attendance.setAttended(!attendance.isAttended());
+                } else {
+                    attendance.setAttended(false);
+                }
+            } else {
+                attendance = new Attendance();
+                attendance.setStudent(groupStudent);
+                attendance.setAttendanceDate(LocalDate.now());
+                attendance.setAttended(attendedStudentIds.contains(groupStudent.getId())); // True yoki False bo'lishi kerak
+            }
+            attendanceRepository.save(attendance);
+        }
+
+        return ResponseEntity.ok(new ResponseMessage("Students attendance saved successfully", null, true));
     }
 
     public ResponseEntity<?> findStudentById(Long id) {
