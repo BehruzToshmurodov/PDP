@@ -7,6 +7,7 @@ import uz.app.finalproject.entity.Room;
 import uz.app.finalproject.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface GroupRepository extends JpaRepository<Groups, Long> {
@@ -20,6 +21,8 @@ public interface GroupRepository extends JpaRepository<Groups, Long> {
     List<Groups> findAllByRoom(Room room);
 
     List<Groups> findByTeacher(User user);
+
+    Optional<Groups> findByIdAndStatus(Long Long , Status status);
 
     Groups findByStudentsId(Long id);
 

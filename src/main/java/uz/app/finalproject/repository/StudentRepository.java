@@ -6,6 +6,7 @@ import uz.app.finalproject.entity.Groups;
 import uz.app.finalproject.entity.Student;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StudentRepository extends JpaRepository<Student , Long> {
 
@@ -16,6 +17,8 @@ public interface StudentRepository extends JpaRepository<Student , Long> {
     List<Student> findAllByAddedGroupAndStatus(Boolean added, Status status);
 
     Integer countByStatusNotIn(List<Status> status);
+
+    Optional<Student> findByIdAndStatus(Long id , Status status);
 
     List<Student> findAllByIdIn( List<Long> ids );
 

@@ -281,19 +281,19 @@ public class GroupService {
 
     public ResponseEntity<?> addNewReaderToGroup(Long studentId, Long groupId) {
 
-        Optional<Student> studentOptional = studentRepository.findById(studentId);
+        Optional<Student> studentOptional = studentRepository.findByIdAndStatus(studentId , Status.ACTIVE);
         if (studentOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseMessage("Student not found", null, false));
+                    .body(new ResponseMessage("Student not found not ACTIVE", null, false));
         }
 
         Student student = studentOptional.get();
 
-        Optional<Groups> groupsOptional = groupRepository.findById(groupId);
+        Optional<Groups> groupsOptional = groupRepository.findByIdAndStatus(groupId , Status.ACTIVE);
 
         if (groupsOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseMessage("Group not found", null, false));
+                    .body(new ResponseMessage("Group not found or not ACTIVE", null, false));
         }
 
         Groups group = groupsOptional.get();
@@ -308,6 +308,7 @@ public class GroupService {
 
                 studentRepository.save(student);
                 groupRepository.save(group);
+
             } else {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                        .body(new ResponseMessage("Room capacity reached. Student can't be added to the group.", student, false));
