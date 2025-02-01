@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uz.app.finalproject.dto.StatusDTO;
 import uz.app.finalproject.dto.UserDTO;
-import uz.app.finalproject.entity.Enums.Gender;
 import uz.app.finalproject.entity.Enums.Role;
 import uz.app.finalproject.entity.Enums.Status;
 import uz.app.finalproject.entity.Groups;
@@ -193,7 +191,7 @@ public class StaffService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
 
-            List<Groups> groups = groupRepository.findAllByTeacher(user);
+            List<Groups> groups = groupRepository.findAllByTeacherAndStatus(user , Status.ACTIVE);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("User info", List.of(user , groups), true));
