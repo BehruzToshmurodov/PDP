@@ -170,10 +170,9 @@ public class StudentService {
                 }
 
                 if (student.getStatus().equals(Status.ACTIVE)) {
+
                     student.setStatus(Status.ACTIVELY_LEFT);
-
                     student.setAddedGroup(false);
-
                     studentRepository.save(student);
 
                     return ResponseEntity.status(HttpStatus.OK)
@@ -235,25 +234,16 @@ public class StudentService {
 
         Set<Long> attendedStudentIds = new HashSet<>(studentIds);
 
-        for (Student groupStudent : groupStudents) {
-            Optional<Attendance> existingAttendance = attendanceRepository.findByStudentAndAttendanceDate(groupStudent, LocalDate.now());
+        for (Student student : groups.getStudents()) {
 
-            Attendance attendance;
-            if (existingAttendance.isPresent()) {
-                attendance = existingAttendance.get();
-                if (attendedStudentIds.contains(groupStudent.getId())) {
-                    attendance.setAttended(!attendance.isAttended());
-                } else {
-                    attendance.setAttended(false);
-                }
-            } else {
-                attendance = new Attendance();
-                attendance.setStudent(groupStudent);
-                attendance.setAttendanceDate(LocalDate.now());
-                attendance.setAttended(attendedStudentIds.contains(groupStudent.getId())); // True yoki False bo'lishi kerak
-            }
+            Attendance attendance =  new Attendance();
+            attendance.setStudent(student);
+            attendance.setAttendanceDate(LocalDate.now());
+            attendance.setAttended(attendedStudentIds.contains(student.getId()));
             attendanceRepository.save(attendance);
+
         }
+
 
         return ResponseEntity.ok(new ResponseMessage("Students attendance saved successfully", null, true));
     }
