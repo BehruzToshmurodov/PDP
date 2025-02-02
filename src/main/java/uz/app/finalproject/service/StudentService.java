@@ -232,18 +232,30 @@ public class StudentService {
                     .body(new ResponseMessage("No students in this group", null, false));
         }
 
+        // Parametr sifatida kelgan student ID larni to'plamga yig'ish
         Set<Long> attendedStudentIds = new HashSet<>(studentIds);
+        LocalDate today = LocalDate.now();
 
-        for (Student student : groups.getStudents()) {
+        for (Student groupStudent : groupStudents) {
+            boolean isAttended = attendedStudentIds.contains(groupStudent.getId());
 
-            Attendance attendance =  new Attendance();
-            attendance.setStudent(student);
-            attendance.setAttendanceDate(LocalDate.now());
-            attendance.setAttended(attendedStudentIds.contains(student.getId()));
+            // Talaba uchun bugungi kun bo'yicha attendance ma'lumotini olish
+            Optional<Attendance> existingAttendance = attendanceRepository.findByStudentAndAttendanceDate(groupStudent, today);
+
+            Attendance attendance;
+            if (existingAttendance.isPresent()) {
+                // Agar attendance mavjud bo'lsa, attended qiymatini yangilash
+                attendance = existingAttendance.get();
+                attendance.setAttended(isAttended);
+            } else {
+                // Yangi attendance yozuvi yaratish
+                attendance = new Attendance();
+                attendance.setStudent(groupStudent);
+                attendance.setAttendanceDate(today);
+                attendance.setAttended(isAttended);
+            }
             attendanceRepository.save(attendance);
-
         }
-
 
         return ResponseEntity.ok(new ResponseMessage("Students attendance saved successfully", null, true));
     }
