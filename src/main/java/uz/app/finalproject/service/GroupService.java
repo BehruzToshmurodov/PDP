@@ -329,7 +329,7 @@ public class GroupService {
 
     public ResponseEntity<?> getStudentWithoutGroup() {
 
-        List<Student> students = studentRepository.findAllByAddedGroupAndStatusIn(false, List.of(Status.ACTIVE , Status.STOPPED));
+        List<Student> students = studentRepository.findAllByAddedGroupAndStatusNotIn(false, List.of(Status.ARCHIVE , Status.DEBTOR));
 
         if (students.isEmpty()) {
             return ResponseEntity.ok(new ResponseMessage("No students without a group", students, true));
