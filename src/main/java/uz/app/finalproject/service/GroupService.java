@@ -281,10 +281,10 @@ public class GroupService {
 
     public ResponseEntity<?> addNewReaderToGroup(Long studentId, Long groupId) {
 
-        Optional<Student> studentOptional = studentRepository.findByIdAndStatus(studentId , Status.ACTIVE);
+        Optional<Student> studentOptional = studentRepository.findByIdAndStatusIn(studentId , List.of(Status.ACTIVE , Status.STOPPED));
         if (studentOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseMessage("Student not found not ACTIVE", null, false));
+                    .body(new ResponseMessage("Student not found ", null, false));
         }
 
         Student student = studentOptional.get();
@@ -298,11 +298,14 @@ public class GroupService {
 
         Groups group = groupsOptional.get();
 
-        if (!group.getStudents().contains(student)) {
+        if (!group.getStudents().contains(student) && student.getStatus().equals(Status.ACTIVE) || student.getStatus().equals(Status.STOPPED)) {
 
             if ( group.getRoom().getCapacity() > group.getStNumber() ){
 
                 student.setAddedGroup(true);
+                if(student.getStatus().equals(Status.STOPPED)){
+                    student.setStatus(Status.ACTIVE);
+                }
                 group.setStNumber(group.getStNumber() + 1);
                 group.getStudents().add(student);
 
@@ -317,7 +320,7 @@ public class GroupService {
 
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ResponseMessage("Student already added to the group", student, false));
+                    .body(new ResponseMessage("Student already added to the group or student not active !", student, false));
         }
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -326,7 +329,7 @@ public class GroupService {
 
     public ResponseEntity<?> getStudentWithoutGroup() {
 
-        List<Student> students = studentRepository.findAllByAddedGroupAndStatus(false, Status.ACTIVE);
+        List<Student> students = studentRepository.findAllByAddedGroupAndStatusNotIn(false, List.of(Status.ARCHIVE , Status.DEBTOR));
 
         if (students.isEmpty()) {
             return ResponseEntity.ok(new ResponseMessage("No students without a group", students, true));

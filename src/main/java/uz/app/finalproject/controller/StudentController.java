@@ -73,4 +73,19 @@ public class StudentController {
         return studentService.findStudentById(id);
     }
 
+    @PostMapping("stopped/{studentId}")
+    public ResponseEntity<?> stopped(@PathVariable Long studentId) {
+        return studentService.stopStudent(studentId);
+    }
+
+    @PostMapping("/debtor/{studentId}")
+    public ResponseEntity<?> debtor(@PathVariable Long studentId) {
+        return studentService.debtor(studentId);
+    }
+
+    @PostMapping("/remove_student_from_group/{groupId}/{studentId}")
+    public ResponseEntity<?> removeStudentFromGroup(@PathVariable Long studentId, @PathVariable Long groupId){
+        return studentService.removeStudentFromGroup(studentId, groupId);
+    }
+
 }

@@ -13,5 +13,8 @@ public class DashboardDTO {
     private Integer active_students;
     private Integer groups;
     private Integer actively_left_students;
+    private Integer arxiv;
+    private Integer debtors;
+    private Integer stopped_students;
 
 }

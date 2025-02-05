@@ -232,23 +232,25 @@ public class StudentService {
                     .body(new ResponseMessage("No students in this group", null, false));
         }
 
-        // Parametr sifatida kelgan student ID larni to'plamga yig'ish
+
         Set<Long> attendedStudentIds = new HashSet<>(studentIds);
+
         LocalDate today = LocalDate.now();
 
         for (Student groupStudent : groupStudents) {
+
             boolean isAttended = attendedStudentIds.contains(groupStudent.getId());
 
-            // Talaba uchun bugungi kun bo'yicha attendance ma'lumotini olish
+
             Optional<Attendance> existingAttendance = attendanceRepository.findByStudentAndAttendanceDate(groupStudent, today);
 
             Attendance attendance;
             if (existingAttendance.isPresent()) {
-                // Agar attendance mavjud bo'lsa, attended qiymatini yangilash
+
                 attendance = existingAttendance.get();
                 attendance.setAttended(isAttended);
             } else {
-                // Yangi attendance yozuvi yaratish
+
                 attendance = new Attendance();
                 attendance.setStudent(groupStudent);
                 attendance.setAttendanceDate(today);
@@ -281,6 +283,89 @@ public class StudentService {
         response.put("group", group);
 
         return ResponseEntity.ok(new ResponseMessage("Success", response, true));
+    }
+
+    public ResponseEntity<?> stopStudent(Long studentId) {
+
+        Optional<Student> byId = studentRepository.findById(studentId);
+
+        if (byId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Student not found", null, false));
+        }
+
+
+        Student student = byId.get();
+
+        Groups byStudentsId = groupRepository.findByStudentsId(student.getId());
+
+        if (byStudentsId != null) {
+            byStudentsId.getStudents().remove(student);
+            byStudentsId.setStNumber(byStudentsId.getStNumber() - 1);
+            groupRepository.save(byStudentsId);
+        }
+
+        student.setStatus(Status.STOPPED);
+        student.setAddedGroup(false);
+        studentRepository.save(student);
+
+        return ResponseEntity.ok(new ResponseMessage("Student stopped successfully", null, true));
+
+    }
+
+    public ResponseEntity<?> debtor(Long studentId) {
+
+        Optional<Student> byId = studentRepository.findById(studentId);
+
+        if (byId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Student not found", null, false));
+        }
+
+
+
+        Student student = byId.get();
+
+        Groups byStudentsId = groupRepository.findByStudentsId(student.getId());
+
+        if (byStudentsId != null) {
+            byStudentsId.getStudents().remove(student);
+            byStudentsId.setStNumber(byStudentsId.getStNumber() - 1);
+            groupRepository.save(byStudentsId);
+        }
+
+        student.setStatus(Status.DEBTOR);
+        studentRepository.save(student);
+
+        return ResponseEntity.ok(new ResponseMessage("Debtor student marked successfully", null, true));
+
+
+    }
+
+    public ResponseEntity<?> removeStudentFromGroup(Long studentId, Long groupId) {
+
+        Optional<Student> byId = studentRepository.findById(studentId);
+        if (byId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Student not found", null, false));
+        }
+
+        Optional<Groups> byGroupId = groupRepository.findById(groupId);
+        if (byGroupId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Group not found", null, false));
+        }
+
+        Student student = byId.get();
+        Groups group = byGroupId.get();
+        student.setAddedGroup(false);
+        group.getStudents().remove(student);
+        group.setStNumber(group.getStNumber() - 1);
+        groupRepository.save(group);
+        studentRepository.save(student);
+
+        return ResponseEntity.ok(new ResponseMessage("Student removed from group successfully", null, true));
+
     }
 }
 

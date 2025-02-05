@@ -29,10 +29,13 @@ public class Home {
 
         DashboardDTO dashboard = new DashboardDTO();
 
-        dashboard.setActive_students(studentRepository.countByStatusNotIn(List.of(Status.ARCHIVE , Status.ACTIVELY_LEFT)));
+        dashboard.setActive_students(studentRepository.countByStatus(Status.ACTIVE));
         dashboard.setGroups(groupRepository.countByStatus(Status.ACTIVE));
         dashboard.setStaffs(staffRepository.countByStatus(Status.ACTIVE));
-        dashboard.setActively_left_students(studentRepository.countByStatusNotIn(List.of(Status.ACTIVE , Status.ARCHIVE)));
+        dashboard.setArxiv(studentRepository.countByStatus(Status.ARCHIVE));
+        dashboard.setDebtors(studentRepository.countByStatus(Status.DEBTOR));
+        dashboard.setStopped_students(studentRepository.countByStatus(Status.STOPPED));
+        dashboard.setActively_left_students(studentRepository.countByStatus(Status.ACTIVELY_LEFT));
 
         return ResponseEntity.ok(new ResponseMessage( "Dashboard info" , dashboard , true));
 

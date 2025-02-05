@@ -18,8 +18,12 @@ public interface StudentRepository extends JpaRepository<Student , Long> {
 
     Integer countByStatusNotIn(List<Status> status);
 
+    Integer countByStatus(Status status);
+
     Optional<Student> findByIdAndStatus(Long id , Status status);
 
-    List<Student> findAllByIdIn( List<Long> ids );
 
+    List<Student> findAllByAddedGroupAndStatusNotIn(boolean b, List<Status> status);
+
+    Optional<Student> findByIdAndStatusIn(Long studentId, List<Status> status);
 }
