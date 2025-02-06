@@ -39,8 +39,8 @@ public class FinanceController {
         return financeService.delete(id);
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<?> filterFinances(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+    @PostMapping("/filter")
+    public ResponseEntity<?> filterFinances(@RequestBody LocalDate startDate, @RequestBody LocalDate endDate) {
         return financeService.filter(startDate, endDate);
     }
 
@@ -51,7 +51,7 @@ public class FinanceController {
 
 
     @GetMapping("/courseFees/filter")
-    public ResponseEntity<?> filterForCourseFees(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+    public ResponseEntity<?> filterForCourseFees(@RequestBody LocalDate startDate, @RequestBody LocalDate endDate) {
         return financeService.filterForCourseFee(startDate, endDate);
     }
 

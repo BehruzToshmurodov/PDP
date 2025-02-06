@@ -88,4 +88,11 @@ public class StudentController {
         return studentService.removeStudentFromGroup(studentId, groupId);
     }
 
+    @PostMapping("/debtors")
+    public ResponseEntity<?> getDebtors() {
+        return studentService.getDebtors();
+    }
+
+
+
 }

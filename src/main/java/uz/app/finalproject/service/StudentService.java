@@ -14,7 +14,6 @@ import uz.app.finalproject.repository.StudentRepository;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -366,6 +365,17 @@ public class StudentService {
 
         return ResponseEntity.ok(new ResponseMessage("Student removed from group successfully", null, true));
 
+    }
+
+    public ResponseEntity<?> getDebtors() {
+        List<Student> byStatus = studentRepository.findByStatus(Status.DEBTOR);
+
+        if (byStatus == null) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("No debtors found", null, false));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage("Success", byStatus, true));
     }
 }
 
