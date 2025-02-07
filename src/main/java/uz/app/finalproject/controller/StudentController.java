@@ -93,6 +93,11 @@ public class StudentController {
         return studentService.getDebtors();
     }
 
+    @PostMapping("/not-debtor/{studentId}")
+    public ResponseEntity<?> notDebtor(@PathVariable Long studentId) {
+        return studentService.notDebtor(studentId);
+    }
+
 
 
 }
