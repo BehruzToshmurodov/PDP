@@ -347,15 +347,27 @@ public class GroupService {
     }
 
     public ResponseEntity<?> getGroups(String status) {
+        List<Groups> groups;
+
         if ("ACTIVE".equals(status)) {
-            return ResponseEntity.ok(new ResponseMessage("Active groups", groupRepository.findAllByStatus(Status.ACTIVE), true));
+            groups = groupRepository.findAllByStatus(Status.ACTIVE);
         } else if ("ARCHIVE".equals(status)) {
-            return ResponseEntity.ok(new ResponseMessage("Archived groups", groupRepository.findAllByStatus(Status.ARCHIVE), true));
+            groups = groupRepository.findAllByStatus(Status.ARCHIVE);
         } else {
             return ResponseEntity.ok(new ResponseMessage("Invalid status", null, false));
         }
 
+
+        for (Groups group : groups) {
+            List<Student> activeStudents = group.getStudents().stream()
+                    .filter(student -> student.getStatus() == Status.ACTIVE)
+                    .collect(Collectors.toList());
+            group.setStudents(activeStudents); 
+        }
+
+        return ResponseEntity.ok(new ResponseMessage("Groups retrieved", groups, true));
     }
+
 
     public ResponseEntity<?> profile(Long groupId) {
 

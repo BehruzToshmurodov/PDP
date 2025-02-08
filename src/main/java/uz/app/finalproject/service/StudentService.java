@@ -287,19 +287,16 @@ public class StudentService {
                     .body(new ResponseMessage("Student not found", null, false));
         }
 
-
         Student student = byId.get();
 
         Groups byStudentsId = groupRepository.findByStudentsId(student.getId());
 
         if (byStudentsId != null) {
-            byStudentsId.getStudents().remove(student);
             byStudentsId.setStNumber(byStudentsId.getStNumber() - 1);
             groupRepository.save(byStudentsId);
         }
 
         student.setStatus(Status.STOPPED);
-        student.setAddedGroup(false);
         studentRepository.save(student);
 
         return ResponseEntity.ok(new ResponseMessage("Student stopped successfully", null, true));
@@ -315,21 +312,17 @@ public class StudentService {
                     .body(new ResponseMessage("Student not found", null, false));
         }
 
-
-
         Student student = byId.get();
 
         Groups byStudentsId = groupRepository.findByStudentsId(student.getId());
 
         if (byStudentsId != null) {
-            byStudentsId.getStudents().remove(student);
             byStudentsId.setStNumber(byStudentsId.getStNumber() - 1);
             groupRepository.save(byStudentsId);
         }
 
         student.setStatus(Status.DEBTOR);
         studentRepository.save(student);
-
         return ResponseEntity.ok(new ResponseMessage("Debtor student marked successfully", null, true));
 
 
