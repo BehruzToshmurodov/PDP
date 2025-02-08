@@ -40,6 +40,8 @@ public class GroupService {
                     .body(new ResponseMessage("Invalid group data provided", null, false));
         }
 
+        System.out.println(groupDTO);
+
         if (groupRepository.existsByGroupNameAndStatusNot(groupDTO.getGroupName(), Status.ARCHIVE)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseMessage("Group with this name already exists", null, false));
@@ -92,6 +94,7 @@ public class GroupService {
 
 
     private void saveGroup(GroupDTO groupDTO, User teacher, Room room) {
+
         Groups groups = new Groups();
         groups.setDays(groupDTO.getDays());
         groups.setGroupName(groupDTO.getGroupName());
