@@ -2,7 +2,6 @@ package uz.app.finalproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import uz.app.finalproject.entity.Enums.Status;
-import uz.app.finalproject.entity.Groups;
 import uz.app.finalproject.entity.Student;
 
 import java.util.List;
@@ -26,7 +25,7 @@ public interface StudentRepository extends JpaRepository<Student , Long> {
 
     List<Student> findAllByAddedGroupAndStatusNotIn(boolean b, List<Status> status);
 
-    Optional<Student> findByIdAndStatusIn(Long studentId, List<Status> status);
+    Optional<Student> findAllByIdInAndStatusIn(List<Long> studentId, List<Status> status);
 
     List<Student> findAllByAddedGroupAndStatusIn(boolean b, List<Status> archive);
 

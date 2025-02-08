@@ -362,6 +362,7 @@ public class StudentService {
     }
 
     public ResponseEntity<?> getDebtors() {
+
         List<Student> byStatus = studentRepository.findByStatus(Status.DEBTOR);
 
         if (byStatus == null) {
@@ -370,6 +371,7 @@ public class StudentService {
         }
 
         return ResponseEntity.ok(new ResponseMessage("Success", byStatus, true));
+
     }
 
     public ResponseEntity<?> notDebtor(Long studentId) {

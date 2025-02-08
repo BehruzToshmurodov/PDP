@@ -8,13 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import uz.app.finalproject.dto.GroupDTO;
 import uz.app.finalproject.entity.*;
-import uz.app.finalproject.entity.Enums.Days;
 import uz.app.finalproject.entity.Enums.Role;
 import uz.app.finalproject.entity.Enums.Status;
 import uz.app.finalproject.repository.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -281,18 +279,16 @@ public class GroupService {
     }
 
 
-    public ResponseEntity<?> addNewReaderToGroup(Long studentId, Long groupId) {
+    public ResponseEntity<?> addNewReaderToGroup(List<Long> studentIds, Long groupId) {
 
-        Optional<Student> studentOptional = studentRepository.findByIdAndStatusIn(studentId , List.of(Status.ACTIVE , Status.STOPPED));
-        if (studentOptional.isEmpty()) {
+        Optional<Student> studentsOptional = studentRepository.findAllByIdInAndStatusIn(studentIds, List.of(Status.ACTIVE, Status.STOPPED));
+
+        if (studentsOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseMessage("Student not found ", null, false));
+                    .body(new ResponseMessage("Students not found", null, false));
         }
 
-        Student student = studentOptional.get();
-
-        Optional<Groups> groupsOptional = groupRepository.findByIdAndStatus(groupId , Status.ACTIVE);
-
+        Optional<Groups> groupsOptional = groupRepository.findByIdAndStatus(groupId, Status.ACTIVE);
         if (groupsOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Group not found or not ACTIVE", null, false));
@@ -300,34 +296,45 @@ public class GroupService {
 
         Groups group = groupsOptional.get();
 
-        if (!group.getStudents().contains(student) && student.getStatus().equals(Status.ACTIVE) || student.getStatus().equals(Status.STOPPED)) {
+        int availableSeats = group.getRoom().getCapacity() - group.getStNumber();
 
-            if ( group.getRoom().getCapacity() > group.getStNumber() ){
+        List<Student> addedStudents = new ArrayList<>();
 
-                student.setAddedGroup(true);
-                if(student.getStatus().equals(Status.STOPPED)){
-                    student.setStatus(Status.ACTIVE);
+        List<Student> students = (List<Student>) studentsOptional.get();
+
+        for (Student student : students) {
+            if (!group.getStudents().contains(student) && (student.getStatus().equals(Status.ACTIVE) || student.getStatus().equals(Status.STOPPED))) {
+
+                if (availableSeats > 0) {
+                    student.setAddedGroup(true);
+
+                    if (student.getStatus().equals(Status.STOPPED)) {
+                        student.setStatus(Status.ACTIVE);
+                    }
+
+                    group.getStudents().add(student);
+                    addedStudents.add(student);
+                    availableSeats--;
+                } else {
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(new ResponseMessage("Room capacity reached. Some students couldn't be added.", addedStudents, false));
                 }
-                group.setStNumber(group.getStNumber() + 1);
-                group.getStudents().add(student);
-
-                studentRepository.save(student);
-                groupRepository.save(group);
-
-            } else {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                       .body(new ResponseMessage("Room capacity reached. Student can't be added to the group.", student, false));
             }
-
-
-        } else {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ResponseMessage("Student already added to the group or student not active !", student, false));
         }
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseMessage("Student added to group successfully", student, true));
+        if (!addedStudents.isEmpty()) {
+            group.setStNumber(group.getStNumber() + addedStudents.size());
+            studentRepository.saveAll(addedStudents);
+            groupRepository.save(group);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Students added to group successfully", addedStudents, true));
+        }
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ResponseMessage("All students were already in the group or inactive!", null, false));
     }
+
 
     public ResponseEntity<?> getStudentWithoutGroup() {
 

@@ -7,6 +7,8 @@ import uz.app.finalproject.dto.GroupDTO;
 
 import uz.app.finalproject.service.GroupService;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/group")
@@ -65,9 +67,9 @@ public class GroupController {
         return groupService.getStudentWithoutGroup();
     }
 
-    @PostMapping("/addNewReader/{studentId}/{groupId}")
-    public ResponseEntity<?> addNewReader(@PathVariable Long studentId, @PathVariable Long groupId) {
-        return groupService.addNewReaderToGroup(studentId, groupId);
+    @PostMapping("/addNewReader/{groupId}")
+    public ResponseEntity<?> addNewReader(@RequestBody List<Long> studentIds, @PathVariable Long groupId) {
+        return groupService.addNewReaderToGroup(studentIds , groupId);
     }
 
 
