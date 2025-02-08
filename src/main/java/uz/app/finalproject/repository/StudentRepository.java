@@ -25,7 +25,7 @@ public interface StudentRepository extends JpaRepository<Student , Long> {
 
     List<Student> findAllByAddedGroupAndStatusNotIn(boolean b, List<Status> status);
 
-    Optional<Student> findAllByIdInAndStatusIn(List<Long> studentId, List<Status> status);
+    List<Student> findAllByIdInAndStatusIn(List<Long> studentId, List<Status> status);
 
     List<Student> findAllByAddedGroupAndStatusIn(boolean b, List<Status> archive);
 

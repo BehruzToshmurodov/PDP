@@ -281,9 +281,9 @@ public class GroupService {
 
     public ResponseEntity<?> addNewReaderToGroup(List<Long> studentIds, Long groupId) {
 
-        Optional<Student> studentsOptional = studentRepository.findAllByIdInAndStatusIn(studentIds, List.of(Status.ACTIVE, Status.STOPPED));
+        List<Student> students = studentRepository.findAllByIdInAndStatusIn(studentIds, List.of(Status.ACTIVE, Status.STOPPED));
 
-        if (studentsOptional.isEmpty()) {
+        if (students == null ) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Students not found", null, false));
         }
@@ -296,22 +296,20 @@ public class GroupService {
 
         Groups group = groupsOptional.get();
 
-        int availableSeats = group.getRoom().getCapacity() - group.getStNumber();
+        if (group.getStudents() == null) {
+            group.setStudents(new ArrayList<>()); // Guruhga studentlar listi bo‘sh bo‘lsa, yangi list yaratamiz
+        }
 
+        int availableSeats = group.getRoom().getCapacity() - group.getStNumber();
         List<Student> addedStudents = new ArrayList<>();
 
-        List<Student> students = (List<Student>) studentsOptional.get();
-
         for (Student student : students) {
-            if (!group.getStudents().contains(student) && (student.getStatus().equals(Status.ACTIVE) || student.getStatus().equals(Status.STOPPED))) {
-
+            if (!group.getStudents().contains(student) && (student.getStatus() == Status.ACTIVE || student.getStatus() == Status.STOPPED)) {
                 if (availableSeats > 0) {
                     student.setAddedGroup(true);
-
-                    if (student.getStatus().equals(Status.STOPPED)) {
+                    if (student.getStatus() == Status.STOPPED) {
                         student.setStatus(Status.ACTIVE);
                     }
-
                     group.getStudents().add(student);
                     addedStudents.add(student);
                     availableSeats--;
