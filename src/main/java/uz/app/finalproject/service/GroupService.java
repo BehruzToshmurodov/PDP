@@ -347,30 +347,17 @@ public class GroupService {
     }
 
     public ResponseEntity<?> getGroups(String status) {
-        List<Groups> groups;
-
         if ("ACTIVE".equals(status)) {
-            groups = groupRepository.findAllByStatus(Status.ACTIVE);
+            return ResponseEntity.ok(new ResponseMessage("Active groups", groupRepository.findAllByStatus(Status.ACTIVE), true));
         } else if ("ARCHIVE".equals(status)) {
-            groups = groupRepository.findAllByStatus(Status.ARCHIVE);
+            return ResponseEntity.ok(new ResponseMessage("Archived groups", groupRepository.findAllByStatus(Status.ARCHIVE), true));
         } else {
             return ResponseEntity.ok(new ResponseMessage("Invalid status", null, false));
         }
 
-
-        for (Groups group : groups) {
-            List<Student> activeStudents = group.getStudents().stream()
-                    .filter(student -> student.getStatus() == Status.ACTIVE)
-                    .collect(Collectors.toList());
-            group.setStudents(activeStudents); 
-        }
-
-        return ResponseEntity.ok(new ResponseMessage("Groups retrieved", groups, true));
     }
 
-
     public ResponseEntity<?> profile(Long groupId) {
-
         Optional<Groups> byId = groupRepository.findById(groupId);
 
         if (byId.isEmpty()) {
@@ -379,9 +366,14 @@ public class GroupService {
 
         Groups group = byId.get();
 
-        return ResponseEntity.ok(new ResponseMessage("Group information", group, true));
+        List<Student> activeStudents = group.getStudents().stream()
+                .filter(student -> student.getStatus() == Status.ACTIVE)
+                .collect(Collectors.toList());
+        group.setStudents(activeStudents);
 
+        return ResponseEntity.ok(new ResponseMessage("Group information", group, true));
     }
+
 
     public ResponseEntity<?> attendanceGroup(Long groupId) {
 
