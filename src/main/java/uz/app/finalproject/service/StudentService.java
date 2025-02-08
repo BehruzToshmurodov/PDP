@@ -37,9 +37,7 @@ public class StudentService {
         if (studentDTO.getPhoneNumber() == null || studentDTO.getPhoneNumber().isEmpty()) {
             return ResponseEntity.badRequest().body(new ResponseMessage("Phone number is required", null, false));
         }
-        if (studentDTO.getPassword() == null || studentDTO.getPassword().isEmpty()) {
-            return ResponseEntity.badRequest().body(new ResponseMessage("Password is required", null, false));
-        }
+
 
 
         Student student = new Student();
@@ -47,7 +45,6 @@ public class StudentService {
         student.setLastname(studentDTO.getLastname());
         student.setGender(studentDTO.getGender());
         student.setPhoneNumber(studentDTO.getPhoneNumber());
-        student.setPassword(studentDTO.getPassword());
         studentRepository.save(student);
 
 
@@ -122,9 +119,7 @@ public class StudentService {
         if (studentDTO.getPhoneNumber() == null || studentDTO.getPhoneNumber().isEmpty()) {
             return ResponseEntity.badRequest().body(new ResponseMessage("Phone number is required", null, false));
         }
-        if (studentDTO.getPassword() == null || studentDTO.getPassword().isEmpty()) {
-            return ResponseEntity.badRequest().body(new ResponseMessage("Password is required", null, false));
-        }
+
 
         try {
             Optional<Student> foundStudent = studentRepository.findById(id);
@@ -133,7 +128,6 @@ public class StudentService {
                 Student student = foundStudent.get();
                 student.setFirstname(studentDTO.getFirstname());
                 student.setLastname(studentDTO.getLastname());
-                student.setPassword(studentDTO.getPassword());
                 student.setPhoneNumber(studentDTO.getPhoneNumber());
 
                 studentRepository.save(student);
