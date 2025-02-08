@@ -68,7 +68,6 @@ public class GroupService {
 
         if (!allByRoom.isEmpty()) {
             for (Groups groups : allByRoom) {
-
                 LocalTime time = LocalTime.parse(groups.getStartTime(), DateTimeFormatter.ofPattern("H:mm"));
                 LocalTime groupDtoTime = LocalTime.parse(groupDTO.getStartTime(), DateTimeFormatter.ofPattern("H:mm"));
                 LocalTime endTime = time.plusHours(3);
