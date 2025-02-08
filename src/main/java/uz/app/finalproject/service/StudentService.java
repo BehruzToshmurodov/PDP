@@ -402,5 +402,27 @@ public class StudentService {
 
         return ResponseEntity.ok(new ResponseMessage("Success", byStatus, true));
     }
+
+    public ResponseEntity<?> markNotStopped(Long studentId) {
+
+        Optional<Student> byId = studentRepository.findById(studentId);
+
+        if (byId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Student not found", null, false));
+        }
+
+        Student student = byId.get();
+
+        if ( student.getStatus().equals(Status.STOPPED) ){
+            student.setStatus(Status.ACTIVE);
+            studentRepository.save(student);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("Student is already not stopped", null, false));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage("Student marked as not stopped successfully", null, true));
+    }
 }
 

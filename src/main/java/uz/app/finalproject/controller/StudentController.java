@@ -104,5 +104,10 @@ public class StudentController {
         return studentService.getStoppedStudents();
     }
 
+    @PostMapping("/mark-not-stopped/{studentId}")
+    public ResponseEntity<?> markNotStopped(@PathVariable Long studentId) {
+        return studentService.markNotStopped(studentId);
+    }
+
 
 }
