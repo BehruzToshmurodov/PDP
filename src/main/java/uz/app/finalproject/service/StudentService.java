@@ -93,7 +93,7 @@ public class StudentService {
 
     public ResponseEntity<?> getArxiv() {
         try {
-            List<Student> arxiv = studentRepository.findAllByStatus(Status.ARCHIVE);
+            List<Student> arxiv = studentRepository.findAllByStatusIn(List.of(Status.ARCHIVE , Status.ACTIVELY_LEFT));
 
             if (arxiv.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK)
