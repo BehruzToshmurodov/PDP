@@ -99,5 +99,10 @@ public class StudentController {
     }
 
 
+    @GetMapping("/stopped-students")
+    public ResponseEntity<?> getStoppedStudents() {
+        return studentService.getStoppedStudents();
+    }
+
 
 }

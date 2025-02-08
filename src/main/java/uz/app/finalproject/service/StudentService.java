@@ -397,5 +397,17 @@ public class StudentService {
         return ResponseEntity.ok(new ResponseMessage("Student marked as not debtor successfully", null, true));
 
     }
+
+    public ResponseEntity<?> getStoppedStudents() {
+
+        List<Student> byStatus = studentRepository.findByStatus(Status.STOPPED);
+
+        if (byStatus == null) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseMessage("No stopped students found", null, false));
+        }
+
+        return ResponseEntity.ok(new ResponseMessage("Success", byStatus, true));
+    }
 }
 
