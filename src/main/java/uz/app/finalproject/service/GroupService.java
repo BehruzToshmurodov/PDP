@@ -281,9 +281,9 @@ public class GroupService {
 
     public ResponseEntity<?> addNewReaderToGroup(List<Long> studentIds, Long groupId) {
 
-        List<Student> students = studentRepository.findAllByIdInAndStatusIn(studentIds, List.of(Status.ACTIVE, Status.STOPPED));
+        List<Student> students = studentRepository.findAllByIdInAndStatusIn(studentIds, List.of(Status.ACTIVE, Status.STOPPED, Status.ACTIVELY_LEFT));
 
-        if (students == null ) {
+        if (students == null) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseMessage("Students not found", null, false));
         }
@@ -297,19 +297,17 @@ public class GroupService {
         Groups group = groupsOptional.get();
 
         if (group.getStudents() == null) {
-            group.setStudents(new ArrayList<>()); // Guruhga studentlar listi bo‘sh bo‘lsa, yangi list yaratamiz
+            group.setStudents(new ArrayList<>());
         }
 
         int availableSeats = group.getRoom().getCapacity() - group.getStNumber();
         List<Student> addedStudents = new ArrayList<>();
 
         for (Student student : students) {
-            if (!group.getStudents().contains(student) && (student.getStatus() == Status.ACTIVE || student.getStatus() == Status.STOPPED)) {
+            if (!group.getStudents().contains(student) && (student.getStatus().equals(Status.ACTIVE) || student.getStatus().equals(Status.STOPPED) || student.getStatus().equals(Status.ACTIVELY_LEFT))) {
                 if (availableSeats > 0) {
                     student.setAddedGroup(true);
-                    if (student.getStatus() == Status.STOPPED) {
-                        student.setStatus(Status.ACTIVE);
-                    }
+                    student.setStatus(Status.ACTIVE);
                     group.getStudents().add(student);
                     addedStudents.add(student);
                     availableSeats--;
@@ -329,14 +327,14 @@ public class GroupService {
                     .body(new ResponseMessage("Students added to group successfully", addedStudents, true));
         }
 
-        return ResponseEntity.status(HttpStatus.CONFLICT)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseMessage("All students were already in the group or inactive!", null, false));
     }
 
 
     public ResponseEntity<?> getStudentWithoutGroup() {
 
-        List<Student> students = studentRepository.findAllByAddedGroupAndStatusNotIn(false, List.of(Status.ARCHIVE , Status.STOPPED));
+        List<Student> students = studentRepository.findAllByAddedGroupAndStatusNotIn(false, List.of(Status.ARCHIVE, Status.STOPPED));
 
         if (students.isEmpty()) {
             return ResponseEntity.ok(new ResponseMessage("No students without a group", students, true));
