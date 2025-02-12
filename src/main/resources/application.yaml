@@ -4,9 +4,9 @@ spring:
     name: FinalProject
 
   datasource:
-    url: jdbc:postgresql://dpg-cu1tv7d2ng1s73efp2vg-a.frankfurt-postgres.render.com:5432/pdp_project_db_olhl
-    username: pdp_project_db_olhl_user
-    password: SIFgBT3K81K4Dk7cF7hvn2qCX6t5vh6G
+    url: jdbc:postgresql://dpg-cum7gm56l47c73961mr0-a.frankfurt-postgres.render.com:5432/ishonch_pdp
+    username: ishonch_pdp_user
+    password: SpDFlT4olnuhYVURUr3i6wRpsz6m9CG4
     driver-class-name: org.postgresql.Driver
 
   jpa:
